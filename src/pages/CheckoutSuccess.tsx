@@ -16,7 +16,7 @@ const CheckoutSuccess = () => {
         </h1>
         
         <p className="text-gray-700 mb-6">
-          Your order has been placed successfully and is now being processed.
+          Your payment has been successfully processed and your order is now being prepared.
           You will receive an email confirmation shortly.
         </p>
         
@@ -34,7 +34,7 @@ const CheckoutSuccess = () => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Payment Method:</span>
-              <span>Cash on Delivery</span>
+              <span>UPI Payment</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Estimated Delivery:</span>

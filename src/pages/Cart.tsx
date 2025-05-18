@@ -1,19 +1,32 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import ProductImage from '@/components/ui/ProductImage';
 import { toast } from 'sonner';
+import QRCodePayment from '@/components/checkout/QRCodePayment';
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, totalItems, totalPrice } = useCart();
   const navigate = useNavigate();
+  const [showPaymentQR, setShowPaymentQR] = useState(false);
   
   const handleCheckout = () => {
+    setShowPaymentQR(true);
+  };
+  
+  const handlePaymentComplete = () => {
     toast.success('Order placed successfully!');
     clearCart();
     navigate('/checkout-success');
+  };
+  
+  const handleCancelPayment = () => {
+    setShowPaymentQR(false);
+    toast('Payment cancelled', { 
+      description: 'Your items are still in your cart'
+    });
   };
   
   if (items.length === 0) {
@@ -24,6 +37,18 @@ const Cart = () => {
         <Button asChild className="btn-primary">
           <Link to="/products">Browse Products</Link>
         </Button>
+      </div>
+    );
+  }
+  
+  if (showPaymentQR) {
+    return (
+      <div className="section-container min-h-[70vh] flex flex-col items-center justify-center">
+        <QRCodePayment 
+          amount={totalPrice}
+          onPaymentComplete={handlePaymentComplete}
+          onCancel={handleCancelPayment}
+        />
       </div>
     );
   }
@@ -136,7 +161,7 @@ const Cart = () => {
             </div>
             
             <Button onClick={handleCheckout} className="btn-primary w-full">
-              Proceed to Checkout
+              Proceed to Pay ₹{totalPrice}
             </Button>
             
             <div className="mt-6">
