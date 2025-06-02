@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, User, ShoppingCart, MapPin } from 'lucide-react';
@@ -12,9 +11,8 @@ const Navbar = () => {
   };
 
   const handleLocateUs = () => {
-    // Open Google Maps with directions to the company location
-    const address = "Savatsya Gau Samvardhan, Delhi, India";
-    const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(address)}`;
+    // Open Google Maps with directions to the actual company location
+    const mapsUrl = "https://www.google.com/maps/place/Savatsa+Gau+Savardhan/@19.1286699,73.2314941,17z/data=!3m1!4b1!4m6!3m5!1s0x3be7ed005b6d2dd1:0xc4ef2742f5d9bfad!8m2!3d19.1286648!4d73.234069!16s%2Fg%2F11x5lg19np?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D";
     window.open(mapsUrl, '_blank');
   };
 
