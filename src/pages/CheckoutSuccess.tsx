@@ -16,7 +16,7 @@ const CheckoutSuccess = () => {
         </h1>
         
         <p className="text-gray-700 mb-6">
-          Your payment has been successfully processed and your order is now being prepared.
+          Your payment has been successfully processed and your order is now being prepared by Savatsya Gau Samvardhan.
           You will receive an email confirmation shortly.
         </p>
         
@@ -26,7 +26,7 @@ const CheckoutSuccess = () => {
           <div className="space-y-3 text-left">
             <div className="flex justify-between">
               <span className="text-gray-600">Order Number:</span>
-              <span className="font-medium">#SAW{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</span>
+              <span className="font-medium">#SGS{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Date:</span>

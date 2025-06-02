@@ -18,7 +18,7 @@ const Home = () => {
               Pure & Natural Products
             </h1>
             <p className="text-xl text-sawatsya-wood mb-6">
-              Handcrafted incense sticks and authentic A2 cow ghee made with traditional methods.
+              Handcrafted incense sticks and authentic A2 cow ghee made with traditional methods by Savatsya Gau Samvardhan.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild className="btn-primary">
@@ -38,9 +38,9 @@ const Home = () => {
         <h2 className="section-title text-center">Our Products</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           <div className="bg-sawatsya-cream rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
-            <h3 className="font-serif text-2xl mb-2 text-sawatsya-wood">Incense Sticks</h3>
+            <h3 className="font-serif text-2xl mb-2 text-sawatsya-wood">Incense Sticks (Dhoop)</h3>
             <p className="text-gray-700 mb-4">
-              Handcrafted with natural ingredients, our incense sticks create a serene atmosphere with their delicate fragrances.
+              Handcrafted with natural ingredients, our incense sticks create a serene atmosphere with their delicate fragrances. Made using traditional methods for the purest experience.
             </p>
             <div className="flex justify-between items-center">
               <span className="text-sawatsya-earth font-medium">₹40 per pack</span>
@@ -53,7 +53,7 @@ const Home = () => {
           <div className="bg-sawatsya-cream rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
             <h3 className="font-serif text-2xl mb-2 text-sawatsya-wood">A2 Cow Ghee</h3>
             <p className="text-gray-700 mb-4">
-              Pure, authentic ghee made from A2 cow milk using traditional bilona method for maximum nutrients and flavor.
+              Pure, authentic ghee made from A2 cow milk using traditional bilona method for maximum nutrients and flavor. Sourced from our own gau samvardhan (cow protection) center.
             </p>
             <div className="flex justify-between items-center">
               <span className="text-sawatsya-earth font-medium">₹2200 per kg</span>
@@ -98,19 +98,19 @@ const Home = () => {
       <section className="section-container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
-            <h2 className="section-title">About SAWATSYA</h2>
+            <h2 className="section-title">About Savatsya Gau Samvardhan</h2>
             <p className="text-gray-700 mb-6">
-              At SAWATSYA, we believe in preserving traditional methods to create pure and natural products. Our incense sticks and A2 cow ghee are made with carefully selected ingredients to ensure the highest quality.
+              At Savatsya Gau Samvardhan, we believe in preserving traditional methods to create pure and natural products. Our incense sticks and A2 cow ghee are made with carefully selected ingredients to ensure the highest quality.
             </p>
             <p className="text-gray-700 mb-6">
-              Every product is crafted with love and attention to detail, bringing the goodness of nature to your home. We take pride in our commitment to sustainability and authentic production methods.
+              Our gau samvardhan (cow protection) initiative ensures that our cows are treated with love and care, following ancient Vedic principles. Every product is crafted with devotion, bringing the goodness of nature to your home.
             </p>
             <Button asChild className="btn-primary">
               <Link to="/about">Read Our Story</Link>
             </Button>
           </div>
           <div className="bg-sawatsya-cream rounded-lg h-80 flex items-center justify-center">
-            <span className="text-2xl font-serif text-sawatsya-earth">Our Story</span>
+            <span className="text-2xl font-serif text-sawatsya-earth">Our Sacred Mission</span>
           </div>
         </div>
       </section>
@@ -122,19 +122,19 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <p className="text-gray-700 mb-4 italic">
-                "The fragrance of these incense sticks is incredible. So pure and long-lasting. I've been using them for meditation and they create the perfect atmosphere."
+                "The fragrance of these incense sticks is incredible. So pure and long-lasting. I've been using them for meditation and they create the perfect spiritual atmosphere."
               </p>
               <p className="font-medium text-sawatsya-wood">- Priya S.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <p className="text-gray-700 mb-4 italic">
-                "This is the best A2 ghee I've tried. The aroma and taste are simply amazing. It reminds me of the ghee my grandmother used to make."
+                "This A2 ghee is exceptional! The aroma and taste are simply divine. It reminds me of the ghee my grandmother used to make from our village cows."
               </p>
               <p className="font-medium text-sawatsya-wood">- Rahul M.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <p className="text-gray-700 mb-4 italic">
-                "I love how natural all the products are. You can really feel the difference in quality. Will definitely be purchasing again!"
+                "I love the dedication to cow protection and natural products. You can really feel the purity and positive energy in everything they create."
               </p>
               <p className="font-medium text-sawatsya-wood">- Anjali P.</p>
             </div>
@@ -147,7 +147,7 @@ const Home = () => {
         <div className="bg-sawatsya-cream rounded-lg p-8 text-center">
           <h2 className="text-2xl font-serif font-medium text-sawatsya-wood mb-4">Join Our Newsletter</h2>
           <p className="text-gray-700 mb-6 max-w-md mx-auto">
-            Stay updated with our latest products, special offers, and traditional recipes.
+            Stay updated with our latest products, special offers, and traditional recipes from Savatsya Gau Samvardhan.
           </p>
           <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
             <input 

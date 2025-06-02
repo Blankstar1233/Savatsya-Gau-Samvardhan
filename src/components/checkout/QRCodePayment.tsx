@@ -14,7 +14,7 @@ const QRCodePayment = ({ amount, onPaymentComplete, onCancel }: QRCodePaymentPro
   const { toast } = useToast();
   
   // UPI payment link format
-  const upiPaymentLink = `upi://pay?pa=sawatsya@upi&pn=SAWATSYA&am=${amount}&cu=INR&tn=Payment for SAWATSYA products`;
+  const upiPaymentLink = `upi://pay?pa=savatsyagausamvardhan@upi&pn=SAVATSYA GAU SAMVARDHAN&am=${amount}&cu=INR&tn=Payment for Savatsya Gau Samvardhan products`;
   
   const handleManualComplete = () => {
     toast({
@@ -27,7 +27,7 @@ const QRCodePayment = ({ amount, onPaymentComplete, onCancel }: QRCodePaymentPro
       onPaymentComplete();
       toast({
         title: "Payment successful",
-        description: "Thank you for your payment!",
+        description: "Thank you for your payment to Savatsya Gau Samvardhan!",
         variant: "default",
       });
     }, 1500);
@@ -36,6 +36,7 @@ const QRCodePayment = ({ amount, onPaymentComplete, onCancel }: QRCodePaymentPro
   return (
     <div className="flex flex-col items-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-xl font-serif text-sawatsya-wood mb-4">Scan to Pay ₹{amount}</h2>
+      <p className="text-sm text-gray-600 mb-4 text-center">Savatsya Gau Samvardhan</p>
       
       <div className="p-4 bg-white rounded-lg mb-6">
         <QRCode 

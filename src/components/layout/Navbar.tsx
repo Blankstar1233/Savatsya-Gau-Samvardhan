@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, ShoppingCart } from 'lucide-react';
+import { Menu, User, ShoppingCart, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
@@ -11,19 +11,33 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLocateUs = () => {
+    // Open Google Maps with directions to the company location
+    const address = "Savatsya Gau Samvardhan, Delhi, India";
+    const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(address)}`;
+    window.open(mapsUrl, '_blank');
+  };
+
   return (
     <nav className="bg-white sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-serif text-2xl font-bold text-sawatsya-earth">SAWATSYA</span>
+              <span className="font-serif text-2xl font-bold text-sawatsya-earth">SAVATSYA GAU SAMVARDHAN</span>
             </Link>
             <div className="hidden md:ml-10 md:flex md:space-x-6">
               <Link to="/" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Home</Link>
               <Link to="/products" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Products</Link>
               <Link to="/about" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">About</Link>
               <Link to="/contact" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Contact</Link>
+              <button 
+                onClick={handleLocateUs}
+                className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors flex items-center gap-1"
+              >
+                <MapPin size={16} />
+                Locate Us
+              </button>
             </div>
           </div>
           
@@ -80,6 +94,16 @@ const Navbar = () => {
             >
               Contact
             </Link>
+            <button 
+              onClick={() => {
+                handleLocateUs();
+                setIsMenuOpen(false);
+              }}
+              className="block w-full text-left px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
+            >
+              <MapPin size={16} className="inline mr-2" />
+              Locate Us
+            </button>
             <Link to="/login" 
               className="block px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
               onClick={() => setIsMenuOpen(false)}
