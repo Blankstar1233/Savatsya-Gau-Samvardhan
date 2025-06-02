@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome 
 
 ## Project info
 **The Project is created for SAVATSYA GAU SAMVARDHAN a small scale family run business. The webiste is my take on making their brand go online and improve their reach. I have created this using all the knowledge I have gained over the past 2 years as an engineering student.**
