@@ -52,7 +52,7 @@ const ProductDetail = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Product Image */}
+        {/* Product Image dalna */}
         <div className="bg-white rounded-lg overflow-hidden shadow-sm">
           <ProductImage 
             src={product.image} 
@@ -61,7 +61,7 @@ const ProductDetail = () => {
           />
         </div>
         
-        {/* Product Details */}
+        {/* Product Details dalna*/}
         <div>
           <h1 className="text-3xl font-serif font-medium text-sawatsya-wood mb-2">{product.name}</h1>
           

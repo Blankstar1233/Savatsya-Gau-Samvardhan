@@ -134,8 +134,8 @@ const Contact = () => {
                   <div>
                     <p className="font-medium">Address</p>
                     <address className="not-italic text-gray-600">
-                      123 Traditional Lane,<br />
-                      New Delhi, 110001,<br />
+                      Varade Gaon,<br />
+                      Badlapur, Maharashtra<br />
                       India
                     </address>
                   </div>
@@ -147,8 +147,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <a href="mailto:info@sawatsya.com" className="text-gray-600 hover:text-sawatsya-terracotta">
-                      info@sawatsya.com
+                    <a href="mailto:vedjoshi0304@gmail.com" className="text-gray-600 hover:text-sawatsya-terracotta">
+                      vedjoshi0304@gmail.com
                     </a>
                   </div>
                 </div>
@@ -159,8 +159,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-medium">Phone</p>
-                    <a href="tel:+919876543210" className="text-gray-600 hover:text-sawatsya-terracotta">
-                      +91 98765 43210
+                    <a href="tel:+91 9588958811" className="text-gray-600 hover:text-sawatsya-terracotta">
+                      +91 9588958811
                     </a>
                   </div>
                 </div>
