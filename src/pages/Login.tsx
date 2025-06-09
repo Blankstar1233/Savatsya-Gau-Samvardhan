@@ -14,13 +14,13 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // This is just a mock authentication for demo purposes
+    // yeeh timepass ka hai login build karna bacha hai 
     if (isLogin) {
-      // Login logic would go here in a real app
+      // Login logi idhar dal
       toast.success('Successfully logged in!');
       navigate('/');
     } else {
-      // Register logic would go here in a real app
+      // new user ka logic idhar dal
       toast.success('Account created successfully! Please check your email to verify your account.');
       setIsLogin(true);
     }
