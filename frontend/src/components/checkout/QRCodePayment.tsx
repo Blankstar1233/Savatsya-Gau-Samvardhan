@@ -14,7 +14,7 @@ const QRCodePayment = ({ amount, onPaymentComplete, onCancel }: QRCodePaymentPro
   const { toast } = useToast();
   
   // UPI payment link format
-  const upiPaymentLink = `upi://pay?pa=savatsyagausamvardhan@upi&pn=SAVATSYA GAU SAMVARDHAN&am=${amount}&cu=INR&tn=Payment for Savatsya Gau Samvardhan products`;
+  const upiPaymentLink = `upi://pay?pa=8788277595@axl&pn=SAVATSYA GAU SAMVARDHAN&am=${amount}&cu=INR&tn=Payment for Savatsya Gau Samvardhan products`;
   
   const handleManualComplete = () => {
     toast({
