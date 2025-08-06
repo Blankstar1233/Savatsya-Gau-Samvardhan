@@ -8,8 +8,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import "./index.css"
 
 // Layout
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 
 // Pages
 import Home from "./pages/Home";
