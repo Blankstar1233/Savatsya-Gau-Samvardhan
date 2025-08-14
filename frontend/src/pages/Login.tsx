@@ -3,26 +3,35 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const { login, register, isLoading } = useAuth();
   const navigate = useNavigate();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // yeeh timepass ka hai login build karna bacha hai 
-    if (isLogin) {
-      // Login logi idhar dal
-      toast.success('Successfully logged in!');
-      navigate('/');
-    } else {
-      // new user ka logic idhar dal
-      toast.success('Account created successfully! Please check your email to verify your account.');
-      setIsLogin(true);
+    try {
+      if (isLogin) {
+        await login(email, password);
+        toast.success('Successfully logged in!');
+        navigate('/');
+      } else {
+        await register({ name, email });
+        toast.success('Account created successfully!');
+        setIsLogin(true);
+        // Clear form
+        setName('');
+        setEmail('');
+        setPassword('');
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'An error occurred');
     }
   };
   
@@ -87,8 +96,8 @@ const Login = () => {
               </div>
             )}
             
-            <Button type="submit" className="btn-primary w-full">
-              {isLogin ? 'Login' : 'Create Account'}
+            <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
+              {isLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
             </Button>
           </form>
           
