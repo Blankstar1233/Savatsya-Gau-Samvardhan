@@ -1,13 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, ShoppingCart, MapPin } from 'lucide-react';
+import { Menu, User, ShoppingCart, MapPin, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const { totalItems } = useCart();
   
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
   };
 
   const handleLocateUs = () => {
@@ -40,17 +57,62 @@ const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">
-              <User size={20} />
-            </Link>
-            <Link to="/cart" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-sawatsya-earth text-white rounded-full flex items-center justify-center text-sm font-medium">
+                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <span className="hidden lg:block">{user?.name}</span>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">
+                <User size={20} />
+              </Link>
+            )}
+            
+            <Link to="/cart" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors relative">
               <ShoppingCart size={20} />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-sawatsya-terracotta text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Link>
           </div>
           
           <div className="flex items-center md:hidden">
-            <Link to="/cart" className="p-2 mr-2 text-sawatsya-wood">
+            <Link to="/cart" className="p-2 mr-2 text-sawatsya-wood relative">
               <ShoppingCart size={20} />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-sawatsya-terracotta text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Link>
             <Button 
               variant="ghost"
@@ -102,12 +164,44 @@ const Navbar = () => {
               <MapPin size={16} className="inline mr-2" />
               Locate Us
             </button>
-            <Link to="/login" 
-              className="block px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Login / Register
-            </Link>
+            
+            {isAuthenticated ? (
+              <>
+                <div className="px-3 py-2 border-t border-sawatsya-sand">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-sawatsya-earth text-white rounded-full flex items-center justify-center text-sm font-medium">
+                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-sawatsya-wood">{user?.name}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                  </div>
+                </div>
+                <Link to="/profile" 
+                  className="block px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User size={16} className="inline mr-2" />
+                  Profile
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
+                >
+                  <LogOut size={16} className="inline mr-2" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/login" 
+                className="block px-3 py-2 text-sawatsya-wood hover:bg-sawatsya-cream rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <User size={16} className="inline mr-2" />
+                Login / Register
+              </Link>
+            )}
           </div>
         </div>
       )}

@@ -53,12 +53,12 @@ export default {
           foreground: 'hsl(var(--card-foreground))'
         },
         sawatsya: {
-          earth: "#8B6E4F",
+          earth: "#8B6e4F",
           leaf: "#7F9968",
           terracotta: "#C06C44",
           cream: "#F5F0E6",
           sand: "#DBC8AA",
-          wood: "#5C4F3D",
+          wood: "#5c4f3d",
           amber: "#D9A566"
         }
       },
