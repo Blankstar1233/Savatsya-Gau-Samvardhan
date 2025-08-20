@@ -36,12 +36,12 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
     const savedWishlist = localStorage.getItem('wishlist');
     if (savedWishlist) {
       try {
-        const parsed = JSON.parse(savedWishlist);
+        const parsed: WishlistItem[] = JSON.parse(savedWishlist);
         // Convert date strings back to Date objects
-        const converted = parsed.map((item: any) => ({
+        const converted: WishlistItem[] = parsed.map((item) => ({
           ...item,
           addedAt: new Date(item.addedAt),
-          priceHistory: item.priceHistory.map((point: any) => ({
+          priceHistory: item.priceHistory.map((point) => ({
             ...point,
             date: new Date(point.date)
           }))
@@ -118,11 +118,11 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
 
   const importWishlist = (data: string) => {
     try {
-      const parsed = JSON.parse(data);
-      const converted = parsed.map((item: any) => ({
+      const parsed: WishlistItem[] = JSON.parse(data);
+      const converted: WishlistItem[] = parsed.map((item) => ({
         ...item,
         addedAt: new Date(item.addedAt),
-        priceHistory: item.priceHistory.map((point: any) => ({
+        priceHistory: item.priceHistory.map((point) => ({
           ...point,
           date: new Date(point.date)
         }))

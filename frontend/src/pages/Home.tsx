@@ -4,31 +4,34 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import ProductImage from '@/components/ui/ProductImage';
 import { products } from '@/data/products';
+import AnimatedPage from '@/components/ui/AnimatedPage';
+import { AnimatedCard, AnimatedText, AnimatedButton, FloatingElement } from '@/components/ui/AnimatedComponents';
 
 const Home = () => {
   const featuredProducts = products.slice(0, 3);
   
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="hero-section flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
-          <div className="max-w-lg">
-            <h1 className="text-5xl md:text-6xl font-serif font-bold text-sawatsya-wood mb-4">
-              Pure & Natural Products
-            </h1>
-            <p className="text-xl text-sawatsya-wood mb-6">
-              Handcrafted incense sticks and authentic A2 cow ghee made with traditional methods by Savatsya Gau Samvardhan.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild className="btn-primary">
-                <Link to="/products">Shop Now</Link>
-              </Button>
-              <Button asChild variant="outline" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream">
-                <Link to="/about">Learn More</Link>
-              </Button>
+    <AnimatedPage>
+      <div className="min-h-screen">
+        {/* Hero Section */}
+        <section className="hero-section flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
+            <div className="max-w-lg">
+              <AnimatedText variant="h1" className="text-5xl md:text-6xl font-serif font-bold text-sawatsya-wood mb-4">
+                Pure & Natural Products
+              </AnimatedText>
+              <AnimatedText delay={0.2} className="text-xl text-sawatsya-wood mb-6">
+                Handcrafted incense sticks and authentic A2 cow ghee made with traditional methods by Savatsya Gau Samvardhan.
+              </AnimatedText>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <AnimatedButton delay={0.4} className="btn-primary" onClick={() => window.location.href = '/products'}>
+                  Shop Now
+                </AnimatedButton>
+                <AnimatedButton delay={0.5} variant="secondary" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream" onClick={() => window.location.href = '/about'}>
+                  Learn More
+                </AnimatedButton>
+              </div>
             </div>
-          </div>
         </div>
         <div className="absolute top-0 right-0 h-full w-1/2 bg-sawatsya-sand opacity-30 hidden md:block"></div>
       </section>
@@ -68,22 +71,26 @@ const Home = () => {
       {/* Featured Products */}
       <section className="bg-sawatsya-sand/30 py-12 md:py-16">
         <div className="section-container">
-          <h2 className="section-title text-center">Featured Products</h2>
+          <AnimatedText variant="h2" className="section-title text-center">
+            Featured Products
+          </AnimatedText>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-            {featuredProducts.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="aspect-square mb-4">
-                  <ProductImage src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                </div>
-                <h3 className="font-medium text-lg mb-2 text-sawatsya-wood">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-sawatsya-earth">₹{product.price}</span>
-                  <Button asChild className="btn-primary">
-                    <Link to={`/product/${product.id}`}>View Details</Link>
-                  </Button>
-                </div>
-              </div>
+            {featuredProducts.map((product, index) => (
+              <FloatingElement key={product.id} duration={3 + index * 0.5} yOffset={8}>
+                <AnimatedCard delay={0.2 + index * 0.1} className="product-card">
+                  <div className="aspect-square mb-4">
+                    <ProductImage src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  </div>
+                  <h3 className="font-medium text-lg mb-2 text-sawatsya-wood">{product.name}</h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-sawatsya-earth">₹{product.price}</span>
+                    <AnimatedButton className="btn-primary" onClick={() => window.location.href = `/product/${product.id}`}>
+                      View Details
+                    </AnimatedButton>
+                  </div>
+                </AnimatedCard>
+              </FloatingElement>
             ))}
           </div>
           <div className="text-center mt-10">
@@ -162,6 +169,7 @@ const Home = () => {
         </div>
       </section>
     </div>
+    </AnimatedPage>
   );
 };
 
