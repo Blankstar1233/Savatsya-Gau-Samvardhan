@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductImage from '@/components/ui/ProductImage';
 import { products } from '@/data/products';
 import AnimatedPage from '@/components/ui/AnimatedPage';
 import { AnimatedCard, AnimatedText, AnimatedButton, FloatingElement } from '@/components/ui/AnimatedComponents';
 
 const Home = () => {
+  const navigate = useNavigate();
   const featuredProducts = products.slice(0, 3);
   
   return (
@@ -24,10 +25,10 @@ const Home = () => {
                 Handcrafted incense sticks and authentic A2 cow ghee made with traditional methods by Savatsya Gau Samvardhan.
               </AnimatedText>
               <div className="flex flex-col sm:flex-row gap-4">
-                <AnimatedButton delay={0.4} className="btn-primary" onClick={() => window.location.href = '/products'}>
+                <AnimatedButton delay={0.4} className="btn-primary" onClick={() => navigate('/products')}>
                   Shop Now
                 </AnimatedButton>
-                <AnimatedButton delay={0.5} variant="secondary" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream" onClick={() => window.location.href = '/about'}>
+                <AnimatedButton delay={0.5} variant="secondary" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream" onClick={() => navigate('/about')}>
                   Learn More
                 </AnimatedButton>
               </div>
@@ -85,7 +86,7 @@ const Home = () => {
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
                   <div className="flex justify-between items-center">
                     <span className="font-medium text-sawatsya-earth">₹{product.price}</span>
-                    <AnimatedButton className="btn-primary" onClick={() => window.location.href = `/product/${product.id}`}>
+                    <AnimatedButton className="btn-primary" onClick={() => navigate(`/product/${product.id}`)}>
                       View Details
                     </AnimatedButton>
                   </div>

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,12 +18,14 @@ const Login = () => {
     e.preventDefault();
     
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedPassword = password.trim();
       if (isLogin) {
-        await login(email, password);
+        await login(normalizedEmail, normalizedPassword);
         toast.success('Successfully logged in!');
         navigate('/');
       } else {
-        await register({ name, email });
+        await register({ name: name.trim(), email: normalizedEmail }, normalizedPassword);
         toast.success('Account created successfully!');
         setIsLogin(true);
         // Clear form
@@ -32,6 +35,22 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      toast.error('Enter your email to reset the password');
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: window.location.origin,
+    });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Password reset email sent. Check your inbox.');
     }
   };
   
@@ -90,9 +109,9 @@ const Login = () => {
             
             {isLogin && (
               <div className="text-right">
-                <a href="#" className="text-sm text-sawatsya-earth hover:text-sawatsya-terracotta">
+                <button type="button" onClick={handleForgotPassword} className="text-sm text-sawatsya-earth hover:text-sawatsya-terracotta">
                   Forgot password?
-                </a>
+                </button>
               </div>
             )}
             

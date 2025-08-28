@@ -3,9 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
@@ -28,6 +28,12 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const RequireAuth = ({ children }: { children: JSX.Element }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -52,7 +58,14 @@ const App = () => (
                         <Route path="/product/:productId" element={<ProductDetail />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/profile" element={<Profile />} />
+                        <Route
+                          path="/profile"
+                          element={
+                            <RequireAuth>
+                              <Profile />
+                            </RequireAuth>
+                          }
+                        />
                         <Route path="/checkout-success" element={<CheckoutSuccess />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './AuthContext';
 
 export interface UserAction {
   id: string;
@@ -53,6 +55,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     searchTerms: [],
     conversionRate: 0
   });
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Initialize session
@@ -67,6 +70,16 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     };
     
     setCurrentSession(newSession);
+    if (isAuthenticated && user) {
+      supabase.from('analytics_sessions').insert({
+        user_id: user.id,
+        session_id: sessionId,
+        start_time: new Date().toISOString(),
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || null,
+        page_views: 0
+      }).then(() => {});
+    }
 
     // Load existing analytics
     const savedAnalytics = localStorage.getItem('user-analytics');
@@ -90,23 +103,51 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    // Track session end on page unload
-    const handleBeforeUnload = () => {
-      if (currentSession) {
-        const endedSession = {
-          ...currentSession,
-          endTime: new Date()
-        };
-        
-        setAnalytics(prev => ({
-          ...prev,
-          sessions: [...prev.sessions, endedSession]
-        }));
-      }
+    // Helper to end the current session safely
+    const endSession = () => {
+      setCurrentSession(prevSession => {
+        if (!prevSession || prevSession.endTime) return prevSession;
+        const endedSession: UserSession = { ...prevSession, endTime: new Date() };
+        setAnalytics(prev => ({ ...prev, sessions: [...prev.sessions, endedSession] }));
+        if (isAuthenticated && user) {
+          supabase.from('analytics_sessions').update({
+            end_time: endedSession.endTime?.toISOString(),
+            page_views: endedSession.pageViews
+          }).eq('session_id', endedSession.id).then(() => {});
+          // Persist actions
+          if (endedSession.actions.length > 0) {
+            supabase.from('analytics_actions').insert(
+              endedSession.actions.map(a => ({
+                session_id: endedSession.id,
+                action_type: a.type,
+                timestamp: a.timestamp.toISOString(),
+                data: a.data
+              }))
+            ).then(() => {});
+          }
+        }
+        return endedSession;
+      });
+    };
+
+    // Track session end on various lifecycle events
+    const handleBeforeUnload = () => endSession();
+    const handlePageHide = () => endSession();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') endSession();
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      // On unmount, also end the session
+      endSession();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -129,6 +170,14 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       actions: [...prev.actions, action]
     } : null);
+    if (isAuthenticated && user) {
+      supabase.from('analytics_actions').insert({
+        session_id: currentSession.id,
+        action_type: type,
+        timestamp: action.timestamp.toISOString(),
+        data
+      }).then(() => {});
+    }
   };
 
   const trackPageView = (page: string, title?: string) => {
@@ -138,6 +187,9 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       pageViews: prev.pageViews + 1
     } : null);
+    if (isAuthenticated && user) {
+      supabase.from('analytics_sessions').update({ page_views: (currentSession?.pageViews || 0) + 1 }).eq('session_id', currentSession?.id || '').then(() => {});
+    }
 
     setAnalytics(prev => ({
       ...prev,

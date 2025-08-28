@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export interface User {
   id: string;
@@ -35,7 +36,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Partial<User>) => Promise<void>;
+  register: (userData: Partial<User>, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   addAddress: (address: Omit<Address, 'id'>) => void;
@@ -51,63 +52,104 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name, phone, preferences')
+          .eq('id', session.user.id)
+          .single();
+        const loadedUser: User = {
+          id: session.user.id,
+          name: profile?.name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          phone: profile?.phone || undefined,
+          address: [],
+          preferences: profile?.preferences || {
+            theme: 'system',
+            language: 'en',
+            currency: 'INR',
+            notifications: { email: true, sms: true, push: true }
+          }
+        };
+        setUser(loadedUser);
+        localStorage.setItem('user', JSON.stringify(loadedUser));
+      }
+      setIsLoading(false);
+    };
+    init();
+
+    const { data: authSub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name, phone, preferences')
+          .eq('id', session.user.id)
+          .single();
+        const loadedUser: User = {
+          id: session.user.id,
+          name: profile?.name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          phone: profile?.phone || undefined,
+          address: [],
+          preferences: profile?.preferences || {
+            theme: 'system',
+            language: 'en',
+            currency: 'INR',
+            notifications: { email: true, sms: true, push: true }
+          }
+        };
+        setUser(loadedUser);
+        localStorage.setItem('user', JSON.stringify(loadedUser));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+    });
+
+    return () => {
+      authSub.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    try {
-      // Simulate API call
-      const mockUser: User = {
-        id: '1',
-        name: 'User Name',
-        email,
-        preferences: {
-          theme: 'system',
-          language: 'en',
-          currency: 'INR',
-          notifications: { email: true, sms: true, push: true }
-        }
-      };
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-    } catch (error) {
-      throw new Error('Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(false);
+    if (error) throw new Error(error.message);
   };
 
-  const register = async (userData: Partial<User>) => {
+  const register = async (userData: Partial<User>, password: string) => {
     setIsLoading(true);
-    try {
-      const newUser: User = {
-        id: Date.now().toString(),
+    const { data, error } = await supabase.auth.signUp({
+      email: userData.email || '',
+      password,
+      options: {
+        data: { name: userData.name || '' }
+      }
+    });
+    if (error) {
+      setIsLoading(false);
+      throw new Error(error.message);
+    }
+    if (data.user) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
         name: userData.name || '',
-        email: userData.email || '',
-        address: [],
         preferences: {
           theme: 'system',
           language: 'en',
           currency: 'INR',
           notifications: { email: true, sms: true, push: true }
         }
-      };
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-    } catch (error) {
-      throw new Error('Registration failed');
-    } finally {
-      setIsLoading(false);
+      });
     }
+    setIsLoading(false);
   };
 
   const logout = () => {
+    supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('user');
   };
@@ -117,6 +159,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      supabase.from('profiles').upsert({ id: user.id, name: updatedUser.name, preferences: updatedUser.preferences, phone: updatedUser.phone }).then(() => {});
     }
   };
 
@@ -132,6 +175,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      supabase.from('addresses').insert({
+        user_id: user.id,
+        label: address.label,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        pincode: address.pincode,
+        is_default: address.isDefault
+      }).then(() => {});
     }
   };
 
@@ -143,6 +195,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const updatedUser = { ...user, address: updatedAddresses };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      supabase.from('addresses').update({
+        label: addressData.label,
+        street: addressData.street,
+        city: addressData.city,
+        state: addressData.state,
+        pincode: addressData.pincode,
+        is_default: addressData.isDefault
+      }).eq('user_id', user.id).then(() => {});
     }
   };
 
@@ -152,6 +212,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const updatedUser = { ...user, address: updatedAddresses };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      supabase.from('addresses').delete().eq('user_id', user.id).then(() => {});
     }
   };
 
@@ -163,6 +224,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      supabase.from('profiles').upsert({ id: user.id, preferences: updatedUser.preferences }).then(() => {});
     }
   };
 

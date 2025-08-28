@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './AuthContext';
 
 // Define product type
 export type Product = {
@@ -36,19 +38,33 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [items, setItems] = useState<CartItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const { user, isAuthenticated } = useAuth();
 
   // Load cart from localStorage on component mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('sawatsya-cart');
-    if (savedCart) {
-      setItems(JSON.parse(savedCart));
-    }
-  }, []);
+    const load = async () => {
+      if (isAuthenticated && user) {
+        const { data } = await supabase
+          .from('cart_items')
+          .select('product, quantity')
+          .eq('user_id', user.id);
+        if (data) {
+          setItems(data.map((row: any) => ({ product: row.product as Product, quantity: row.quantity })));
+          return;
+        }
+      }
+      const savedCart = localStorage.getItem('sawatsya-cart');
+      if (savedCart) setItems(JSON.parse(savedCart));
+    };
+    load();
+  }, [isAuthenticated, user?.id]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (items.length > 0) {
       localStorage.setItem('sawatsya-cart', JSON.stringify(items));
+    } else {
+      localStorage.removeItem('sawatsya-cart');
     }
     
     // Calculate totals
@@ -71,6 +87,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       return [...prevItems, { product, quantity }];
     });
+    if (isAuthenticated && user) {
+      supabase.from('cart_items').upsert({
+        user_id: user.id,
+        product_id: product.id,
+        product,
+        quantity
+      }).then(() => {});
+    }
   };
 
   // Remove product from cart
@@ -80,6 +104,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Remove from localStorage if cart becomes empty
     if (items.length === 1) {
       localStorage.removeItem('sawatsya-cart');
+    }
+    if (isAuthenticated && user) {
+      supabase.from('cart_items').delete().eq('user_id', user.id).eq('product_id', productId).then(() => {});
     }
   };
 
@@ -97,12 +124,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : item
       )
     );
+    if (isAuthenticated && user) {
+      supabase.from('cart_items').update({ quantity }).eq('user_id', user.id).eq('product_id', productId).then(() => {});
+    }
   };
 
   // Clear cart
   const clearCart = () => {
     setItems([]);
     localStorage.removeItem('sawatsya-cart');
+    if (isAuthenticated && user) {
+      supabase.from('cart_items').delete().eq('user_id', user.id).then(() => {});
+    }
   };
 
   return (
