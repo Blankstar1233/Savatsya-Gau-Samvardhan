@@ -50,3 +50,20 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+
+## Supabase setup
+
+Create a project at supabase.com and add env vars in `frontend/.env` (or `.env.local` for Vite):
+
+```
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_project_anon_key
+```
+
+Run installs and dev:
+
+```
+cd frontend
+npm i
+npm run dev
+```
