@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,19 +16,34 @@ const Login = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedPassword = password.trim();
       if (isLogin) {
-        await login(normalizedEmail, normalizedPassword);
+        // Backend login
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: normalizedEmail, password: normalizedPassword })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        // Save JWT and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
         toast.success('Successfully logged in!');
         navigate('/');
       } else {
-        await register({ name: name.trim(), email: normalizedEmail }, normalizedPassword);
+        // Backend register
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: normalizedEmail, password: normalizedPassword })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
         toast.success('Account created successfully!');
         setIsLogin(true);
-        // Clear form
         setName('');
         setEmail('');
         setPassword('');
@@ -38,20 +53,9 @@ const Login = () => {
     }
   };
 
+  // Password reset not implemented for custom backend
   const handleForgotPassword = async () => {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail) {
-      toast.error('Enter your email to reset the password');
-      return;
-    }
-    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: window.location.origin,
-    });
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password reset email sent. Check your inbox.');
-    }
+    toast.error('Password reset is not implemented. Please contact support.');
   };
   
   return (
