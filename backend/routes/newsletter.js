@@ -1,6 +1,6 @@
 import express from 'express';
 import Subscriber from '../models/Subscriber.js';
-import { sendEmail, isEmailEnabled, verifyEmailTransport } from '../utils/mailer.js';
+import { sendEmail, isEmailEnabled } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -24,12 +24,6 @@ router.post('/subscribe', async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }
-});
-
-// SMTP verify endpoint (debug)
-router.get('/verify', async (req, res) => {
-  const result = await verifyEmailTransport();
-  return res.json(result);
 });
 
 export default router;

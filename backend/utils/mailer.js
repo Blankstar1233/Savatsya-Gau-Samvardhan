@@ -38,14 +38,4 @@ export async function sendEmail({ to, subject, html }) {
   }
 }
 
-export async function verifyEmailTransport() {
-  if (!transporter) return { ok: false, error: 'SMTP not configured' };
-  try {
-    await transporter.verify();
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: err?.message || String(err) };
-  }
-}
-
 

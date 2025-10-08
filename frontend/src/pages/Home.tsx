@@ -14,6 +14,11 @@ const Home = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
 
+  const handleSubmitNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleSubscribe();
+  };
+
   const handleSubscribe = async () => {
     const email = newsletterEmail.trim().toLowerCase();
     if (!email) return toast.error('Please enter your email');
@@ -181,7 +186,7 @@ const Home = () => {
           <p className="text-gray-700 mb-6 max-w-md mx-auto">
             Stay updated with our latest products, special offers, and traditional recipes from Savatsya Gau Samvardhan.
           </p>
-          <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
+          <form onSubmit={handleSubmitNewsletter} className="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
             <input 
               type="email" 
               placeholder="Your email address" 
@@ -189,10 +194,10 @@ const Home = () => {
               onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 px-4 py-2 border border-sawatsya-sand rounded-md focus:outline-none focus:ring-2 focus:ring-sawatsya-earth"
             />
-            <Button className="btn-primary whitespace-nowrap" onClick={handleSubscribe} disabled={submittingNewsletter}>
+            <Button type="submit" className="btn-primary whitespace-nowrap" disabled={submittingNewsletter}>
               {submittingNewsletter ? 'Subscribing...' : 'Subscribe'}
             </Button>
-          </div>
+          </form>
         </div>
       </section>
     </div>
