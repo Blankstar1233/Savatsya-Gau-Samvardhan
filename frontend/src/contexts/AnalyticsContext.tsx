@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 
 export interface UserAction {
@@ -70,16 +69,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     };
     
     setCurrentSession(newSession);
-    if (isAuthenticated && user) {
-      supabase.from('analytics_sessions').insert({
-        user_id: user.id,
-        session_id: sessionId,
-        start_time: new Date().toISOString(),
-        user_agent: navigator.userAgent,
-        referrer: document.referrer || null,
-        page_views: 0
-      }).then(() => {});
-    }
+    // Persisting analytics to backend can be added here later via REST
 
     // Load existing analytics
     const savedAnalytics = localStorage.getItem('user-analytics');
@@ -109,23 +99,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
         if (!prevSession || prevSession.endTime) return prevSession;
         const endedSession: UserSession = { ...prevSession, endTime: new Date() };
         setAnalytics(prev => ({ ...prev, sessions: [...prev.sessions, endedSession] }));
-        if (isAuthenticated && user) {
-          supabase.from('analytics_sessions').update({
-            end_time: endedSession.endTime?.toISOString(),
-            page_views: endedSession.pageViews
-          }).eq('session_id', endedSession.id).then(() => {});
-          // Persist actions
-          if (endedSession.actions.length > 0) {
-            supabase.from('analytics_actions').insert(
-              endedSession.actions.map(a => ({
-                session_id: endedSession.id,
-                action_type: a.type,
-                timestamp: a.timestamp.toISOString(),
-                data: a.data
-              }))
-            ).then(() => {});
-          }
-        }
+        // TODO: optional backend persistence via REST
         return endedSession;
       });
     };
@@ -170,14 +144,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       actions: [...prev.actions, action]
     } : null);
-    if (isAuthenticated && user) {
-      supabase.from('analytics_actions').insert({
-        session_id: currentSession.id,
-        action_type: type,
-        timestamp: action.timestamp.toISOString(),
-        data
-      }).then(() => {});
-    }
+    // Optional: send to backend via REST
   };
 
   const trackPageView = (page: string, title?: string) => {
@@ -187,9 +154,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       pageViews: prev.pageViews + 1
     } : null);
-    if (isAuthenticated && user) {
-      supabase.from('analytics_sessions').update({ page_views: (currentSession?.pageViews || 0) + 1 }).eq('session_id', currentSession?.id || '').then(() => {});
-    }
+    // Optional: update backend via REST
 
     setAnalytics(prev => ({
       ...prev,

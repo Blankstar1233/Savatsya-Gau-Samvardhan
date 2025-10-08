@@ -73,22 +73,74 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   const setColorScheme = (colorScheme: ColorScheme) => {
     setConfig(prev => ({ ...prev, colorScheme }));
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ uiConfig: { colorScheme } })
+      }).catch(() => {});
+    }
   };
 
   const setFontSize = (fontSize: 'small' | 'medium' | 'large') => {
     setConfig(prev => ({ ...prev, fontSize }));
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ uiConfig: { fontSize } })
+      }).catch(() => {});
+    }
   };
 
   const toggleAnimations = () => {
-    setConfig(prev => ({ ...prev, animations: !prev.animations }));
+    setConfig(prev => {
+      const animations = !prev.animations;
+      const next = { ...prev, animations };
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetch('/api/user/preferences', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ uiConfig: { animations } })
+        }).catch(() => {});
+      }
+      return next;
+    });
   };
 
   const toggleHighContrast = () => {
-    setConfig(prev => ({ ...prev, highContrast: !prev.highContrast }));
+    setConfig(prev => {
+      const highContrast = !prev.highContrast;
+      const next = { ...prev, highContrast };
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetch('/api/user/preferences', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ uiConfig: { highContrast } })
+        }).catch(() => {});
+      }
+      return next;
+    });
   };
 
   const toggleReduceMotion = () => {
-    setConfig(prev => ({ ...prev, reduceMotion: !prev.reduceMotion }));
+    setConfig(prev => {
+      const reduceMotion = !prev.reduceMotion;
+      const next = { ...prev, reduceMotion };
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetch('/api/user/preferences', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ uiConfig: { reduceMotion } })
+        }).catch(() => {});
+      }
+      return next;
+    });
   };
 
   const resetToDefaults = () => {

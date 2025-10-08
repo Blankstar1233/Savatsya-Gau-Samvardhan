@@ -20,21 +20,15 @@ const Login = () => {
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedPassword = password.trim();
       if (isLogin) {
-        // Backend login
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: normalizedEmail, password: normalizedPassword })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Login failed');
-        // Save JWT and user info
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
+        // Use AuthContext to perform login and update auth state
+        await login(normalizedEmail, normalizedPassword);
         toast.success('Successfully logged in!');
-        navigate('/');
+        // Redirect to intended route or home
+        const state = (navigate as any).location?.state as { from?: Location } | undefined;
+        const fromPath = state?.from?.pathname || '/';
+        navigate(fromPath, { replace: true });
       } else {
-        // Backend register
+        // Register, then sign in via context, then redirect home
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -42,11 +36,9 @@ const Login = () => {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Registration failed');
-        toast.success('Account created successfully!');
-        setIsLogin(true);
-        setName('');
-        setEmail('');
-        setPassword('');
+        await login(normalizedEmail, normalizedPassword);
+        toast.success('Account created! You are now logged in.');
+        navigate('/', { replace: true });
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');

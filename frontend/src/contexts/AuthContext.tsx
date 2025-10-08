@@ -38,6 +38,11 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: Partial<User>, password: string) => Promise<void>;
   logout: () => void;
+  updatePreferences: (prefs: UserPreferences) => void;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => void;
+  addAddress: (address: Omit<Address, 'id'>) => void;
+  updateAddress: (id: string, updates: Omit<Address, 'id'>) => void;
+  deleteAddress: (id: string) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoading(true);
-      fetch('/api/auth/me', {
+      fetch('/api/user/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -91,21 +96,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    setIsLoading(false);
     if (!res.ok) throw new Error(data.error || 'Login failed');
     localStorage.setItem('token', data.token);
-    setUser({
-      id: data.userId || '',
-      name: data.name || email.split('@')[0] || 'User',
-      email,
-      preferences: data.preferences || {
-        theme: 'system',
-        language: 'en',
-        currency: 'INR',
-        notifications: { email: true, sms: true, push: true }
-      },
-      address: data.address || [],
-    });
+    // After login, fetch complete profile to ensure latest persisted data
+    try {
+      const meRes = await fetch('/api/user/me', {
+        headers: { Authorization: `Bearer ${data.token}` }
+      });
+      const me = await meRes.json();
+      if (meRes.ok && me && me.email) {
+        setUser({
+          id: me.userId || data.userId || '',
+          name: me.name || me.email?.split('@')[0] || 'User',
+          email: me.email || email,
+          preferences: me.preferences || {
+            theme: 'system',
+            language: 'en',
+            currency: 'INR',
+            notifications: { email: true, sms: true, push: true }
+          },
+          address: me.address || [],
+        });
+      } else {
+        setUser({
+          id: data.userId || '',
+          name: data.name || email.split('@')[0] || 'User',
+          email,
+          preferences: data.preferences || {
+            theme: 'system',
+            language: 'en',
+            currency: 'INR',
+            notifications: { email: true, sms: true, push: true }
+          },
+          address: data.address || [],
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const register = async (userData: Partial<User>, password: string) => {
@@ -125,8 +153,84 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
   };
 
+  // Preferences and profile management (client-side; can be wired to backend later)
+  const updatePreferences = (prefs: UserPreferences) => {
+    setUser(prev => prev ? { ...prev, preferences: prefs } : prev);
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ preferences: prefs })
+      }).catch(() => {});
+    }
+  };
 
-  // Address and preferences management would be implemented with backend endpoints
+  const updateUser = (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : prev);
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(updates)
+      }).catch(() => {});
+    }
+  };
+
+  const addAddress = (address: Omit<Address, 'id'>) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const newAddress: Address = { id: `addr_${Date.now()}`, ...address };
+      const addresses = [...(prev.address || [])];
+      if (newAddress.isDefault) {
+        addresses.forEach(a => (a.isDefault = false));
+      }
+      addresses.push(newAddress);
+      return { ...prev, address: addresses };
+    });
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/user/addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: `addr_${Date.now()}`, ...address })
+      }).catch(() => {});
+    }
+  };
+
+  const updateAddress = (id: string, updates: Omit<Address, 'id'>) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const addresses = (prev.address || []).map(a => {
+        if (a.id !== id) return a;
+        return { ...a, ...updates };
+      });
+      if (updates.isDefault) {
+        addresses.forEach(a => { if (a.id !== id) a.isDefault = false; });
+      }
+      return { ...prev, address: addresses };
+    });
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch(`/api/user/addresses/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(updates)
+      }).catch(() => {});
+    }
+  };
+
+  const deleteAddress = (id: string) => {
+    setUser(prev => prev ? { ...prev, address: (prev.address || []).filter(a => a.id !== id) } : prev);
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch(`/api/user/addresses/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => {});
+    }
+  };
 
   return (
     <AuthContext.Provider value={{
@@ -135,7 +239,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLoading,
       login,
       register,
-      logout
+      logout,
+      updatePreferences,
+      updateUser,
+      addAddress,
+      updateAddress,
+      deleteAddress
     }}>
       {children}
     </AuthContext.Provider>

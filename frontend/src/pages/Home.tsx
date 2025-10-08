@@ -1,15 +1,39 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductImage from '@/components/ui/ProductImage';
 import { products } from '@/data/products';
 import AnimatedPage from '@/components/ui/AnimatedPage';
 import { AnimatedCard, AnimatedText, AnimatedButton, FloatingElement } from '@/components/ui/AnimatedComponents';
+import { toast } from 'sonner';
 
 const Home = () => {
   const navigate = useNavigate();
   const featuredProducts = products.slice(0, 3);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
+
+  const handleSubscribe = async () => {
+    const email = newsletterEmail.trim().toLowerCase();
+    if (!email) return toast.error('Please enter your email');
+    try {
+      setSubmittingNewsletter(true);
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Subscription failed');
+      toast.success('Subscribed! You will receive updates on new products.');
+      setNewsletterEmail('');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Subscription failed');
+    } finally {
+      setSubmittingNewsletter(false);
+    }
+  };
   
   return (
     <AnimatedPage>
@@ -161,10 +185,12 @@ const Home = () => {
             <input 
               type="email" 
               placeholder="Your email address" 
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 px-4 py-2 border border-sawatsya-sand rounded-md focus:outline-none focus:ring-2 focus:ring-sawatsya-earth"
             />
-            <Button className="btn-primary whitespace-nowrap">
-              Subscribe
+            <Button className="btn-primary whitespace-nowrap" onClick={handleSubscribe} disabled={submittingNewsletter}>
+              {submittingNewsletter ? 'Subscribing...' : 'Subscribe'}
             </Button>
           </div>
         </div>

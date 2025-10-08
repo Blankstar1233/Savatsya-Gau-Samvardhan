@@ -51,19 +51,19 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## Supabase setup
+## Environment setup
 
-Create a project at supabase.com and add env vars in `frontend/.env` (or `.env.local` for Vite):
+Backend requires MongoDB and JWT secret in `backend/.env`:
 
 ```
-VITE_SUPABASE_URL=your_project_url
-VITE_SUPABASE_ANON_KEY=your_project_anon_key
+MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
+JWT_SECRET=change_me
+PORT=5000
 ```
 
 Run installs and dev:
 
 ```
-cd frontend
-npm i
-npm run dev
+cd backend && npm i && npm start
+cd ../frontend && npm i && npm run dev
 ```

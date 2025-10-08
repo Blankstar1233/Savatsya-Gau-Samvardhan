@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 
 // Define product type
@@ -43,16 +42,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Load cart from localStorage on component mount
   useEffect(() => {
     const load = async () => {
-      if (isAuthenticated && user) {
-        const { data } = await supabase
-          .from('cart_items')
-          .select('product, quantity')
-          .eq('user_id', user.id);
-        if (data) {
-          setItems(data.map((row: any) => ({ product: row.product as Product, quantity: row.quantity })));
-          return;
-        }
-      }
+      // TODO: if backend cart persistence is needed, fetch via REST here
       const savedCart = localStorage.getItem('sawatsya-cart');
       if (savedCart) setItems(JSON.parse(savedCart));
     };
@@ -87,14 +77,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       return [...prevItems, { product, quantity }];
     });
-    if (isAuthenticated && user) {
-      supabase.from('cart_items').upsert({
-        user_id: user.id,
-        product_id: product.id,
-        product,
-        quantity
-      }).then(() => {});
-    }
+    // Optional: send to backend via REST
   };
 
   // Remove product from cart
@@ -105,9 +88,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (items.length === 1) {
       localStorage.removeItem('sawatsya-cart');
     }
-    if (isAuthenticated && user) {
-      supabase.from('cart_items').delete().eq('user_id', user.id).eq('product_id', productId).then(() => {});
-    }
+    // Optional: send to backend via REST
   };
 
   // Update quantity of product in cart
@@ -124,18 +105,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : item
       )
     );
-    if (isAuthenticated && user) {
-      supabase.from('cart_items').update({ quantity }).eq('user_id', user.id).eq('product_id', productId).then(() => {});
-    }
+    // Optional: send to backend via REST
   };
 
   // Clear cart
   const clearCart = () => {
     setItems([]);
     localStorage.removeItem('sawatsya-cart');
-    if (isAuthenticated && user) {
-      supabase.from('cart_items').delete().eq('user_id', user.id).then(() => {});
-    }
+    // Optional: send to backend via REST
   };
 
   return (

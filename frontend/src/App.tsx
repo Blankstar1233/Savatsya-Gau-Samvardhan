@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -31,8 +31,17 @@ const queryClient = new QueryClient();
 
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
   if (isLoading) return null;
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ? children : (
+    <Navigate to="/login" replace state={{ from: location }} />
+  );
+};
+
+const LoginRoute = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  return isAuthenticated ? <Navigate to="/" replace /> : <Login />;
 };
 
 const App = () => (
@@ -57,7 +66,7 @@ const App = () => (
                         <Route path="/products/:category" element={<Products />} />
                         <Route path="/product/:productId" element={<ProductDetail />} />
                         <Route path="/cart" element={<Cart />} />
-                        <Route path="/login" element={<Login />} />
+                        <Route path="/login" element={<LoginRoute />} />
                         <Route
                           path="/profile"
                           element={

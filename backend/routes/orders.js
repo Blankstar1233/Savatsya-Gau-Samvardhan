@@ -1,19 +1,19 @@
 import express from 'express';
 import Order from '../models/Order.js';
-import { supabaseAuthMiddleware } from '../middleware/supabaseAuth.js';
+import { authenticateJWT } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all orders for current user
-router.get('/', supabaseAuthMiddleware, async (req, res) => {
-  const userId = req.supabaseUser.sub;
+router.get('/', authenticateJWT, async (req, res) => {
+  const userId = req.user.userId;
   const orders = await Order.find({ userId });
   res.json(orders);
 });
 
 // Create a new order
-router.post('/', supabaseAuthMiddleware, async (req, res) => {
-  const userId = req.supabaseUser.sub;
+router.post('/', authenticateJWT, async (req, res) => {
+  const userId = req.user.userId;
   const { items, total } = req.body;
   const order = new Order({ userId, items, total });
   await order.save();
@@ -21,10 +21,8 @@ router.post('/', supabaseAuthMiddleware, async (req, res) => {
 });
 
 // (Optional) Admin: get all orders
-router.get('/all', supabaseAuthMiddleware, async (req, res) => {
-  if (!req.supabaseUser.email || req.supabaseUser.email !== 'admin@ves.ac.in') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
+router.get('/all', authenticateJWT, async (req, res) => {
+  if (!req.user?.isAdmin) return res.status(403).json({ error: 'Admin access required' });
   const orders = await Order.find();
   res.json(orders);
 });
