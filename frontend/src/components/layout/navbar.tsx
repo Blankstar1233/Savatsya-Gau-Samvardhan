@@ -39,16 +39,16 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-serif text-2xl font-bold text-sawatsya-earth">SAVATSYA GAU SAMVARDHAN</span>
+              <span className="font-serif text-xl md:text-2xl font-bold text-sawatsya-earth whitespace-nowrap">SAVATSYA GAU SAMVARDHAN</span>
             </Link>
-            <div className="hidden md:ml-10 md:flex md:space-x-6">
+            <div className="hidden md:ml-10 md:flex md:space-x-6 whitespace-nowrap">
               <Link to="/" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Home</Link>
               <Link to="/products" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Products</Link>
               <Link to="/about" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">About</Link>
               <Link to="/contact" className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors">Contact</Link>
               <button 
                 onClick={handleLocateUs}
-                className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors flex items-center gap-1"
+                className="px-3 py-2 text-sawatsya-wood hover:text-sawatsya-terracotta transition-colors flex items-center gap-1 whitespace-nowrap"
               >
                 <MapPin size={16} />
                 Locate Us
@@ -56,7 +56,7 @@ const Navbar = () => {
             </div>
           </div>
           
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 whitespace-nowrap">
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -88,6 +88,15 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  @media (max-width: 768px) {
+    body {
+      background-attachment: scroll;
+    }
   }
 
   h1, h2, h3, h4, h5 {
@@ -102,6 +111,16 @@
 @layer components {
   .hero-section {
     @apply relative h-[80vh] min-h-[600px] w-full bg-sawatsya-cream overflow-hidden;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-section {
+      background-attachment: scroll;
+      min-height: 70vh;
+    }
   }
   
   .product-card {
@@ -122,6 +141,13 @@
   
   .section-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16;
+    background-color: transparent;
+  }
+  
+  @media (max-width: 640px) {
+    .section-container {
+      @apply px-2 py-8;
+    }
   }
   
   .section-title {
