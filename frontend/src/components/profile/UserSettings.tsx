@@ -26,9 +26,20 @@ import { AnimatedCard, AnimatedButton } from '@/components/ui/AnimatedComponents
 import { useToast } from '@/hooks/use-toast';
 
 const UserSettings: React.FC = () => {
-  const { user, updatePreferences } = useAuth();
+  const { user, updatePreferences, deleteAccount } = useAuth();
   const { config, setTheme, setColorScheme, setFontSize, toggleAnimations, toggleHighContrast } = useTheme();
   const { toast } = useToast();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+      toast({ title: 'Account deleted', description: 'Your account has been permanently deleted.' });
+      window.location.href = '/';
+    } catch (err) {
+      toast({ title: 'Error', description: err instanceof Error ? err.message : 'Failed to delete account', variant: 'destructive' });
+    }
+  };
 
   const [notifications, setNotifications] = useState(user?.preferences?.notifications || {
     email: true,
@@ -159,7 +170,7 @@ const UserSettings: React.FC = () => {
               </div>
               <Switch
                 checked={config.animations}
-                onCheckedChange={toggleAnimations}
+                onCheckedChange={(checked: boolean) => toggleAnimations(checked)}
               />
             </div>
             
@@ -170,7 +181,7 @@ const UserSettings: React.FC = () => {
               </div>
               <Switch
                 checked={config.highContrast}
-                onCheckedChange={toggleHighContrast}
+                onCheckedChange={(checked: boolean) => toggleHighContrast(checked)}
               />
             </div>
           </div>
@@ -298,7 +309,11 @@ const UserSettings: React.FC = () => {
             <AnimatedButton 
               variant="ghost" 
               className="w-full justify-start text-red-600 hover:text-red-700"
-              onClick={() => toast({ title: "Feature coming soon", description: "Account deletion will be available soon" })}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                  handleDeleteAccount();
+                }
+              }}
             >
               Delete Account
             </AnimatedButton>

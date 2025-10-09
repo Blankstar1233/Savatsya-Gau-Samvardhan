@@ -64,7 +64,7 @@ const ProfileManager: React.FC = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(user?.avatar || null);
   
   // Form states
   const [profileForm, setProfileForm] = useState<ProfileFormData>({
@@ -96,14 +96,34 @@ const ProfileManager: React.FC = () => {
       }
       
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setProfilePicture(result);
-        // You would typically upload this to a server here
-        toast({
-          title: "Profile picture updated",
-          description: "Your profile picture has been successfully updated",
-        });
+      reader.onload = async (e) => {
+        const dataUrl = e.target?.result as string;
+        setProfilePicture(dataUrl);
+        // Try to upload to backend to persist the avatar (multipart/form-data)
+        const token = localStorage.getItem('token');
+        try {
+          const form = new FormData();
+          form.append('avatar', file);
+          const res = await fetch('/api/user/avatar', {
+            method: 'POST',
+            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+            body: form,
+          });
+          const json = await res.json();
+          if (res.ok && json?.url) {
+            // Persist hosted URL into AuthContext
+            updateUser({ avatar: json.url });
+            toast({ title: 'Profile picture updated', description: 'Uploaded and saved' });
+          } else {
+            // fallback to DataURL stored client-side and saved via profile endpoint
+            updateUser({ avatar: dataUrl });
+            toast({ title: 'Profile picture updated (local)', description: 'Saved locally because upload failed' });
+          }
+        } catch (err) {
+          // fallback
+          updateUser({ avatar: dataUrl });
+          toast({ title: 'Profile picture updated (local)', description: 'Saved locally because upload failed' });
+        }
       };
       reader.readAsDataURL(file);
     }

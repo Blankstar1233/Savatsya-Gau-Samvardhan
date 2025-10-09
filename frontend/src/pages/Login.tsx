@@ -42,6 +42,8 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');
+      // Ensure we stay on login page after failed login (don't show blank screen)
+      navigate('/login', { replace: true });
     }
   };
 

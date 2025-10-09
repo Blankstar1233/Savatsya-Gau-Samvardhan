@@ -17,9 +17,9 @@ type ThemeContextType = {
   setTheme: (theme: Theme) => void;
   setColorScheme: (scheme: ColorScheme) => void;
   setFontSize: (size: 'small' | 'medium' | 'large') => void;
-  toggleAnimations: () => void;
-  toggleHighContrast: () => void;
-  toggleReduceMotion: () => void;
+  toggleAnimations: (value?: boolean) => void;
+  toggleHighContrast: (value?: boolean) => void;
+  toggleReduceMotion: (value?: boolean) => void;
   resetToDefaults: () => void;
   isDarkMode: boolean;
 };
@@ -56,15 +56,18 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     
     // Apply theme to document
     const root = document.documentElement;
-    root.classList.toggle('dark', shouldBeDark);
+    if (shouldBeDark) root.classList.add('dark'); else root.classList.remove('dark');
     root.setAttribute('data-color-scheme', config.colorScheme);
     root.setAttribute('data-font-size', config.fontSize);
-    root.classList.toggle('high-contrast', config.highContrast);
-    root.classList.toggle('reduce-motion', config.reduceMotion);
-    root.classList.toggle('no-animations', !config.animations);
+    if (config.highContrast) root.classList.add('high-contrast'); else root.classList.remove('high-contrast');
+    if (config.reduceMotion) root.classList.add('reduce-motion'); else root.classList.remove('reduce-motion');
+    if (!config.animations) root.classList.add('no-animations'); else root.classList.remove('no-animations');
 
     // Save config
     localStorage.setItem('theme-config', JSON.stringify(config));
+
+    // Emit a small custom event so components that rely on CSS vars or classes update
+    try { window.dispatchEvent(new CustomEvent('theme:updated', { detail: config })); } catch (e) {}
   }, [config]);
 
   const setTheme = (theme: Theme) => {
@@ -95,9 +98,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const toggleAnimations = () => {
+  const toggleAnimations = (value?: boolean) => {
     setConfig(prev => {
-      const animations = !prev.animations;
+      const animations = typeof value === 'boolean' ? value : !prev.animations;
       const next = { ...prev, animations };
       const token = localStorage.getItem('token');
       if (token) {
@@ -111,9 +114,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const toggleHighContrast = () => {
+  const toggleHighContrast = (value?: boolean) => {
     setConfig(prev => {
-      const highContrast = !prev.highContrast;
+      const highContrast = typeof value === 'boolean' ? value : !prev.highContrast;
       const next = { ...prev, highContrast };
       const token = localStorage.getItem('token');
       if (token) {
@@ -127,9 +130,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const toggleReduceMotion = () => {
+  const toggleReduceMotion = (value?: boolean) => {
     setConfig(prev => {
-      const reduceMotion = !prev.reduceMotion;
+      const reduceMotion = typeof value === 'boolean' ? value : !prev.reduceMotion;
       const next = { ...prev, reduceMotion };
       const token = localStorage.getItem('token');
       if (token) {

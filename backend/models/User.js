@@ -33,6 +33,7 @@ const uiConfigSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  avatar: { type: String, default: null },
   name: { type: String },
   phone: { type: String },
   address: [addressSchema],

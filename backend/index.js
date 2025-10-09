@@ -2,12 +2,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import http from 'http';
 import mongoose from "mongoose";
 import cors from "cors";
 import orderRoutes from './routes/orders.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import newsletterRoutes from './routes/newsletter.js';
+import webhookRoutes from './routes/webhooks.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,6 +33,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+// Webhooks (keep before JSON body consumers if using raw body verification)
+app.use('/api/webhooks', webhookRoutes);
 
 // Static serving of frontend in production
 const __filename = fileURLToPath(import.meta.url);
@@ -42,4 +46,22 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Create HTTP server so we can attach WebSocket server to the same server
+const server = http.createServer(app);
+
+// Attach WebSocket server (lazy - if ws package is available)
+try {
+  import('./websocket.js').then(({ attachWebsocket }) => {
+    const { broadcast } = attachWebsocket(server, { path: '/ws' });
+    // expose broadcast for route handlers to use
+    app.locals.broadcast = broadcast;
+    console.log('WebSocket server attached at /ws');
+  }).catch((err) => {
+    console.warn('WebSocket module not available or failed to initialize:', err?.message || err);
+  });
+} catch (err) {
+  console.warn('WebSocket attach skipped:', err?.message || err);
+}
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

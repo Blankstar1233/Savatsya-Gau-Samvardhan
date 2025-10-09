@@ -1,6 +1,10 @@
 import express from 'express';
 import { authenticateJWT } from '../middleware/auth.js';
 import User from '../models/User.js';
+import multer from 'multer';
+import cloudinary from '../utils/cloudinary.js';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
@@ -11,6 +15,7 @@ router.get('/me', authenticateJWT, async (req, res) => {
   return res.json({
     email: user.email,
     userId: user._id,
+    avatar: user.avatar || null,
     name: user.name,
     phone: user.phone,
     address: user.address || [],
@@ -21,13 +26,35 @@ router.get('/me', authenticateJWT, async (req, res) => {
 
 // Update profile basic info
 router.put('/profile', authenticateJWT, async (req, res) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, avatar } = req.body;
   const updates = { };
   if (name !== undefined) updates.name = name;
   if (phone !== undefined) updates.phone = phone;
   if (email !== undefined) updates.email = email.toLowerCase();
+  if (avatar !== undefined) updates.avatar = avatar; // store Data URL or URL
   const user = await User.findByIdAndUpdate(req.user.userId, updates, { new: true }).lean();
   return res.json({ ok: true, user });
+});
+
+// Upload avatar (multipart/form-data) -> stores on Cloudinary and saves URL on user
+router.post('/avatar', authenticateJWT, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    // upload buffer to cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({ folder: 'avatars' }, (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
+      stream.end(req.file.buffer);
+    });
+    const url = result.secure_url || result.url;
+    const user = await User.findByIdAndUpdate(req.user.userId, { avatar: url }, { new: true }).lean();
+    return res.json({ ok: true, url, user });
+  } catch (err) {
+    console.error('Avatar upload failed', err?.message || err);
+    return res.status(500).json({ error: 'Upload failed' });
+  }
 });
 
 // Update preferences
@@ -74,6 +101,19 @@ router.delete('/addresses/:id', authenticateJWT, async (req, res) => {
   user.address = user.address.filter(a => a.id !== id);
   await user.save();
   return res.json({ ok: true });
+});
+
+// Delete entire account
+router.delete('/account', authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    await User.findByIdAndDelete(userId);
+    // Optionally: delete user's orders, etc.
+    return res.json({ ok: true, message: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('Account deletion failed', err?.message || err);
+    return res.status(500).json({ error: 'Failed to delete account' });
+  }
 });
 
 export default router;

@@ -5,6 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
   phone?: string;
   address?: Address[];
   preferences: UserPreferences;
@@ -39,10 +40,11 @@ type AuthContextType = {
   register: (userData: Partial<User>, password: string) => Promise<void>;
   logout: () => void;
   updatePreferences: (prefs: UserPreferences) => void;
-  updateUser: (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => void;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>) => void;
   addAddress: (address: Omit<Address, 'id'>) => void;
   updateAddress: (id: string, updates: Omit<Address, 'id'>) => void;
   deleteAddress: (id: string) => void;
+  deleteAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -59,13 +61,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       fetch('/api/user/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Token invalid or expired');
+          }
+          return res.json();
+        })
         .then(data => {
           if (data && data.email) {
             setUser({
               id: data.userId || '',
               name: data.name || data.email.split('@')[0] || 'User',
               email: data.email,
+              avatar: data.avatar || null,
               preferences: data.preferences || {
                 theme: 'system',
                 language: 'en',
@@ -81,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setIsLoading(false);
         })
         .catch(() => {
+          // Token invalid or expired - clear it and remain logged out
           setUser(null);
           localStorage.removeItem('token');
           setIsLoading(false);
@@ -109,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: me.userId || data.userId || '',
           name: me.name || me.email?.split('@')[0] || 'User',
           email: me.email || email,
+          avatar: me.avatar || null,
           preferences: me.preferences || {
             theme: 'system',
             language: 'en',
@@ -122,6 +132,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: data.userId || '',
           name: data.name || email.split('@')[0] || 'User',
           email,
+          avatar: data.avatar || null,
           preferences: data.preferences || {
             theme: 'system',
             language: 'en',
@@ -166,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateUser = (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => {
+  const updateUser = (updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>) => {
     setUser(prev => prev ? { ...prev, ...updates } : prev);
     const token = localStorage.getItem('token');
     if (token) {
@@ -232,6 +243,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const deleteAccount = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch('/api/user/account', {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to delete account');
+    }
+    // Clear local state after successful deletion
+    setUser(null);
+    localStorage.removeItem('token');
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -244,7 +271,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       updateUser,
       addAddress,
       updateAddress,
-      deleteAddress
+      deleteAddress,
+      deleteAccount
     }}>
       {children}
     </AuthContext.Provider>
