@@ -13,14 +13,18 @@ router.post('/subscribe', async (req, res) => {
     const existing = await Subscriber.findOne({ email: normalized });
     if (existing) return res.json({ ok: true, message: 'Already subscribed' });
     await Subscriber.create({ email: normalized });
-    // Send welcome email (non-blocking for subscription)
-    const emailSent = await sendEmail({
+    // Send welcome email (best-effort; subscription still succeeds even if email fails)
+    const emailResult = await sendEmail({
       to: normalized,
       subject: 'Subscribed to Savatsya Gau Samvardhan',
       html: `<p>Namaste! Thank you for subscribing to Savatsya Gau Samvardhan.</p>
              <p>We will keep you updated on new products and special offers.</p>`
     });
-    return res.status(201).json({ ok: true, emailSent, emailEnabled: isEmailEnabled() });
+    const response = { ok: true, emailEnabled: isEmailEnabled() };
+    if (emailResult) {
+      response.email = { sent: Boolean(emailResult.ok), details: emailResult };
+    }
+    return res.status(201).json(response);
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }

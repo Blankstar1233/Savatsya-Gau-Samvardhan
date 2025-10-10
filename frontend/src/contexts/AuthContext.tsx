@@ -1,13 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 
+export interface TwoFactorAuth {
+  enabled: boolean;
+  method?: 'email' | 'sms' | 'app';
+  enabledAt?: Date;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   phone?: string;
+  profilePicture?: string;
   address?: Address[];
   preferences: UserPreferences;
+  twoFactorAuth?: TwoFactorAuth;
+  passwordChangedAt?: Date;
+  isActive?: boolean;
 }
 
 export interface Address {
@@ -39,7 +49,7 @@ type AuthContextType = {
   register: (userData: Partial<User>, password: string) => Promise<void>;
   logout: () => void;
   updatePreferences: (prefs: UserPreferences) => void;
-  updateUser: (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => void;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'profilePicture'>>) => Promise<void>;
   addAddress: (address: Omit<Address, 'id'>) => void;
   updateAddress: (id: string, updates: Omit<Address, 'id'>) => void;
   deleteAddress: (id: string) => void;
@@ -66,6 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               id: data.userId || '',
               name: data.name || data.email.split('@')[0] || 'User',
               email: data.email,
+              phone: data.phone || '',
+              profilePicture: data.profilePicture || '',
               preferences: data.preferences || {
                 theme: 'system',
                 language: 'en',
@@ -109,6 +121,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: me.userId || data.userId || '',
           name: me.name || me.email?.split('@')[0] || 'User',
           email: me.email || email,
+          phone: me.phone || '',
+          profilePicture: me.profilePicture || '',
           preferences: me.preferences || {
             theme: 'system',
             language: 'en',
@@ -122,6 +136,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: data.userId || '',
           name: data.name || email.split('@')[0] || 'User',
           email,
+          phone: data.phone || '',
+          profilePicture: data.profilePicture || '',
           preferences: data.preferences || {
             theme: 'system',
             language: 'en',
@@ -166,15 +182,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateUser = (updates: Partial<Pick<User, 'name' | 'email' | 'phone'>>) => {
-    setUser(prev => prev ? { ...prev, ...updates } : prev);
+  const updateUser = async (updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'profilePicture'>>) => {
+    console.log('updateUser called with:', updates);
     const token = localStorage.getItem('token');
-    if (token) {
-      fetch('/api/user/profile', {
+    if (!token) {
+      console.error('No authentication token found');
+      return;
+    }
+
+    console.log('Making API call to /api/user/profile with token:', token ? 'present' : 'missing');
+
+    try {
+      const response = await fetch('/api/user/profile', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
         body: JSON.stringify(updates)
-      }).catch(() => {});
+      });
+
+      console.log('API response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to update user profile:', errorData);
+        throw new Error(errorData.error || 'Failed to update profile');
+      }
+
+      const result = await response.json();
+      console.log('Profile updated successfully:', result);
+      
+      // Update local state only after successful API call
+      console.log('Updating local user state with:', updates);
+      setUser(prev => {
+        const newUser = prev ? { ...prev, ...updates } : prev;
+        console.log('New user state:', newUser);
+        return newUser;
+      });
+      
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      // You might want to show a toast notification here
+      throw error;
     }
   };
 

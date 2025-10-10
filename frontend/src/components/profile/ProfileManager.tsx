@@ -62,6 +62,7 @@ const ProfileManager: React.FC = () => {
   
   // State for various forms and dialogs
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -72,6 +73,29 @@ const ProfileManager: React.FC = () => {
     email: user?.email || '',
     phone: user?.phone || '',
   });
+
+  // Sync form state with user data changes
+  React.useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+      setProfilePicture(user.profilePicture || null);
+    }
+  }, [user]);
+
+  // Update form when user data changes
+  React.useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
   
   const [addressForm, setAddressForm] = useState<AddressFormData>({
     label: '',
@@ -83,7 +107,7 @@ const ProfileManager: React.FC = () => {
   });
 
   // Profile picture upload handler
-  const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -96,28 +120,55 @@ const ProfileManager: React.FC = () => {
       }
       
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const result = e.target?.result as string;
-        setProfilePicture(result);
-        // You would typically upload this to a server here
-        toast({
-          title: "Profile picture updated",
-          description: "Your profile picture has been successfully updated",
-        });
+        
+        try {
+          // Update profile picture on server
+          await updateUser({ profilePicture: result });
+          setProfilePicture(result);
+          toast({
+            title: "Profile picture updated",
+            description: "Your profile picture has been successfully updated",
+          });
+        } catch (error) {
+          console.error('Failed to update profile picture:', error);
+          toast({
+            title: "Update failed",
+            description: "Failed to update your profile picture. Please try again.",
+            variant: "destructive",
+          });
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
   // Profile form handlers
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateUser(profileForm);
-    setIsEditingProfile(false);
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been successfully updated",
-    });
+    console.log('Profile form submission started with data:', profileForm);
+    setIsUpdatingProfile(true);
+    
+    try {
+      console.log('Calling updateUser with:', profileForm);
+      await updateUser(profileForm);
+      console.log('Profile update successful');
+      setIsEditingProfile(false);
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been successfully updated",
+      });
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingProfile(false);
+    }
   };
 
   // Address form handlers
@@ -201,9 +252,9 @@ const ProfileManager: React.FC = () => {
           <div className="flex items-center space-x-6 mb-6">
             <div className="relative">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center">
-                {profilePicture ? (
+                {(profilePicture || user.profilePicture) ? (
                   <img 
-                    src={profilePicture} 
+                    src={profilePicture || user.profilePicture} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
                   />
@@ -271,14 +322,19 @@ const ProfileManager: React.FC = () => {
                 </div>
               </div>
               <div className="flex space-x-2">
-                <AnimatedButton type="submit" className="flex items-center">
+                <AnimatedButton 
+                  type="submit" 
+                  className="flex items-center" 
+                  disabled={isUpdatingProfile}
+                >
                   <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+                  {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
                 </AnimatedButton>
                 <AnimatedButton 
                   type="button" 
                   variant="ghost" 
                   onClick={() => setIsEditingProfile(false)}
+                  disabled={isUpdatingProfile}
                 >
                   Cancel
                 </AnimatedButton>

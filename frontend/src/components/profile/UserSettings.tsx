@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -24,10 +25,15 @@ import {
 } from 'lucide-react';
 import { AnimatedCard, AnimatedButton } from '@/components/ui/AnimatedComponents';
 import { useToast } from '@/hooks/use-toast';
+import ChangePassword from './ChangePassword';
+import TwoFactorAuth from './TwoFactorAuth';
+import DataDownload from './DataDownload';
+import DeleteAccount from './DeleteAccount';
 
 const UserSettings: React.FC = () => {
   const { user, updatePreferences } = useAuth();
   const { config, setTheme, setColorScheme, setFontSize, toggleAnimations, toggleHighContrast } = useTheme();
+  const { config: langConfig, setLanguage, setCurrency, t, getCurrentLanguageName, getCurrentCurrencyName } = useLanguage();
   const { toast } = useToast();
 
   const [notifications, setNotifications] = useState(user?.preferences?.notifications || {
@@ -54,16 +60,17 @@ const UserSettings: React.FC = () => {
   };
 
   const handleLanguageChange = (language: 'en' | 'hi' | 'mr') => {
+    setLanguage(language);
     if (user) {
       updatePreferences({
         ...user.preferences,
         language,
       });
-      toast({
-        title: "Language updated",
-        description: "Your language preference has been saved",
-      });
     }
+    toast({
+      title: t('language-updated'),
+      description: t('language-preference-saved'),
+    });
   };
 
   const getThemeIcon = () => {
@@ -81,13 +88,13 @@ const UserSettings: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Palette className="mr-2 h-5 w-5" />
-            Theme & Display
+            {t('theme-display')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Theme Selection */}
           <div className="space-y-2">
-            <Label>Theme</Label>
+            <Label>{t('theme') || 'Theme'}</Label>
             <div className="flex space-x-2">
               <Button
                 variant={config.theme === 'light' ? 'default' : 'outline'}
@@ -121,7 +128,7 @@ const UserSettings: React.FC = () => {
 
           {/* Color Scheme */}
           <div className="space-y-2">
-            <Label>Color Scheme</Label>
+            <Label>{t('color-scheme') || 'Color Scheme'}</Label>
             <Select value={config.colorScheme} onValueChange={(value: any) => setColorScheme(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue />
@@ -137,7 +144,7 @@ const UserSettings: React.FC = () => {
 
           {/* Font Size */}
           <div className="space-y-2">
-            <Label>Font Size</Label>
+            <Label>{t('font-size') || 'Font Size'}</Label>
             <Select value={config.fontSize} onValueChange={(value: any) => setFontSize(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue />
@@ -154,7 +161,7 @@ const UserSettings: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label>Animations</Label>
+                <Label>{t('animations') || 'Animations'}</Label>
                 <p className="text-sm text-gray-600">Enable smooth animations and transitions</p>
               </div>
               <Switch
@@ -165,7 +172,7 @@ const UserSettings: React.FC = () => {
             
             <div className="flex items-center justify-between">
               <div>
-                <Label>High Contrast</Label>
+                <Label>{t('high-contrast') || 'High Contrast'}</Label>
                 <p className="text-sm text-gray-600">Increase contrast for better visibility</p>
               </div>
               <Switch
@@ -182,7 +189,7 @@ const UserSettings: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Bell className="mr-2 h-5 w-5" />
-            Notifications
+            {t('notifications')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -226,35 +233,40 @@ const UserSettings: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Globe className="mr-2 h-5 w-5" />
-            Language & Region
+            {t('language-region')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Language</Label>
+            <Label>{t('language')}</Label>
             <Select 
-              value={user?.preferences?.language || 'en'} 
+              value={langConfig.language} 
               onValueChange={(value: any) => handleLanguageChange(value)}
             >
-              <SelectTrigger className="w-48">
-                <SelectValue />
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder={getCurrentLanguageName()} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="hi">हिंदी (Hindi)</SelectItem>
-                <SelectItem value="mr">मराठी (Marathi)</SelectItem>
+                <SelectItem value="en">{t('english')}</SelectItem>
+                <SelectItem value="hi">{t('hindi')}</SelectItem>
+                <SelectItem value="mr">{t('marathi')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div className="space-y-2">
-            <Label>Currency</Label>
-            <Select value="INR" disabled>
-              <SelectTrigger className="w-48">
-                <SelectValue />
+            <Label>{t('currency')}</Label>
+            <Select 
+              value={langConfig.currency} 
+              onValueChange={(value: any) => setCurrency(value)}
+            >
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder={getCurrentCurrencyName()} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="INR">₹ Indian Rupee (INR)</SelectItem>
+                <SelectItem value="INR">{t('indian-rupee')}</SelectItem>
+                <SelectItem value="USD">$ US Dollar (USD)</SelectItem>
+                <SelectItem value="EUR">€ Euro (EUR)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -266,42 +278,44 @@ const UserSettings: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Shield className="mr-2 h-5 w-5" />
-            Privacy & Security
+            {t('privacy-security')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <AnimatedButton 
-              variant="secondary" 
-              className="w-full justify-start"
-              onClick={() => toast({ title: "Feature coming soon", description: "Password change feature will be available soon" })}
-            >
-              Change Password
-            </AnimatedButton>
+          <div className="space-y-3">
+            <ChangePassword
+              trigger={
+                <div className="w-full bg-sawatsya-sand hover:bg-sawatsya-cream text-sawatsya-wood transition-all duration-200 py-4 px-4 rounded-lg cursor-pointer border border-sawatsya-sand hover:border-sawatsya-wood/20 shadow-sm hover:shadow-md">
+                  <span className="font-medium">{t('change-password')}</span>
+                </div>
+              }
+            />
             
-            <AnimatedButton 
-              variant="secondary" 
-              className="w-full justify-start"
-              onClick={() => toast({ title: "Feature coming soon", description: "Two-factor authentication will be available soon" })}
-            >
-              Enable Two-Factor Authentication
-            </AnimatedButton>
+            <TwoFactorAuth
+              trigger={
+                <div className="w-full bg-sawatsya-sand hover:bg-sawatsya-cream text-sawatsya-wood transition-all duration-200 py-4 px-4 rounded-lg cursor-pointer border border-sawatsya-sand hover:border-sawatsya-wood/20 shadow-sm hover:shadow-md">
+                  <span className="font-medium">{t('enable-2fa')}</span>
+                </div>
+              }
+            />
             
-            <AnimatedButton 
-              variant="secondary" 
-              className="w-full justify-start"
-              onClick={() => toast({ title: "Feature coming soon", description: "Data export feature will be available soon" })}
-            >
-              Download My Data
-            </AnimatedButton>
+            <DataDownload
+              trigger={
+                <div className="w-full bg-sawatsya-sand hover:bg-sawatsya-cream text-sawatsya-wood transition-all duration-200 py-4 px-4 rounded-lg cursor-pointer border border-sawatsya-sand hover:border-sawatsya-wood/20 shadow-sm hover:shadow-md">
+                  <span className="font-medium">{t('download-data')}</span>
+                </div>
+              }
+            />
             
-            <AnimatedButton 
-              variant="ghost" 
-              className="w-full justify-start text-red-600 hover:text-red-700"
-              onClick={() => toast({ title: "Feature coming soon", description: "Account deletion will be available soon" })}
-            >
-              Delete Account
-            </AnimatedButton>
+            <div className="pt-2">
+              <DeleteAccount
+                trigger={
+                  <div className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-4 px-4 rounded-lg cursor-pointer border border-red-200 hover:border-red-300 shadow-sm hover:shadow-md">
+                    <span className="font-medium">{t('delete-account')}</span>
+                  </div>
+                }
+              />
+            </div>
           </div>
         </CardContent>
       </AnimatedCard>
