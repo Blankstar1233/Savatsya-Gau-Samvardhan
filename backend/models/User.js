@@ -30,16 +30,44 @@ const uiConfigSchema = new mongoose.Schema({
   reduceMotion: { type: Boolean, default: false }
 }, { _id: false });
 
+const twoFactorAuthSchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: false },
+  method: { type: String, enum: ['email', 'sms', 'app'], default: null },
+  backupCodes: [{
+    code: String,
+    used: { type: Boolean, default: false }
+  }],
+  enabledAt: Date,
+  disabledAt: Date
+}, { _id: false });
+
+const deletionScheduleSchema = new mongoose.Schema({
+  scheduledAt: Date,
+  deletionDate: Date,
+  reason: String
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   avatar: { type: String, default: null },
   name: { type: String },
   phone: { type: String },
+  profilePicture: { type: String }, // Base64 encoded image or URL
   address: [addressSchema],
   preferences: { type: preferencesSchema, default: () => ({}) },
   uiConfig: { type: uiConfigSchema, default: () => ({}) },
-  cart: [{ type: Object }]
+  cart: [{ type: Object }],
+  
+  // Security fields
+  passwordChangedAt: Date,
+  twoFactorAuth: { type: twoFactorAuthSchema, default: () => ({}) },
+  isActive: { type: Boolean, default: true },
+  deletionScheduled: deletionScheduleSchema,
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 
 // Hash password before saving

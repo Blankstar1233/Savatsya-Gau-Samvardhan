@@ -6,15 +6,24 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
+    console.log('Registration attempt:', req.body);
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
+    
+    console.log('Checking for existing user with email:', email.toLowerCase());
     const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) return res.status(409).json({ error: 'Email already in use' });
-  const hashed = await hashPassword(password);
-  const user = new User({ email: email.toLowerCase(), password: hashed });
-  await user.save();
+    if (existing) {
+      console.log('User already exists');
+      return res.status(409).json({ error: 'Email already in use' });
+    }
+    
+    console.log('Creating new user');
+    const user = new User({ email: email.toLowerCase(), password });
+    await user.save();
+    console.log('User created successfully');
     return res.status(201).json({ message: 'Registered successfully' });
   } catch (err) {
+    console.error('Registration error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });
