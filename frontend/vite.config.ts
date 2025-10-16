@@ -18,7 +18,12 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../dist", // Output directory for production build
+    outDir: "dist", // Output directory for production build
     emptyOutDir: true, // Clean output directory before build
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   },
 });
