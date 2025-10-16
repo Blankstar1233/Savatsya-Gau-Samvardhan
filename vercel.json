@@ -26,5 +26,5 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "installCommand": "npm install --omit=optional --prefer-offline --no-audit"
+  "installCommand": "cd frontend && npm install"
 }
