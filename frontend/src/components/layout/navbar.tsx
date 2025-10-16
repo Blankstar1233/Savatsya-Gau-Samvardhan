@@ -62,15 +62,17 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta">
                     <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center text-sm font-medium">
-                        {user?.avatar ? (
-                          <img src={user.avatar} alt={user.name || 'User'} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>
-                        )}
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center text-sm font-medium">
+                          {(() => {
+                            const avatarSrc = user?.avatar || user?.profilePicture || null;
+                            if (avatarSrc) {
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                            }
+                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                          })()}
+                        </div>
+                        <span className="hidden lg:block">{user?.name}</span>
                       </div>
-                      <span className="hidden lg:block">{user?.name}</span>
-                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -174,11 +176,13 @@ const Navbar = () => {
                 <div className="px-3 py-2 border-t border-sawatsya-sand">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth text-white flex items-center justify-center text-sm font-medium">
-                          {user?.avatar ? (
-                            <img src={user.avatar} alt={user.name || 'User'} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>
-                          )}
+                          {(() => {
+                            const avatarSrc = user?.avatar || user?.profilePicture || null;
+                            if (avatarSrc) {
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                            }
+                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                          })()}
                         </div>
                     <div>
                       <p className="text-sm font-medium text-sawatsya-wood">{user?.name}</p>
