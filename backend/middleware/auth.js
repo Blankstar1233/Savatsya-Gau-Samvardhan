@@ -9,11 +9,12 @@ export function authenticateJWT(req, res, next) {
     req.user = payload;
     return next();
   } catch (err) {
+    console.error('JWT verification failed:', err?.message || err);
     return res.status(401).json({ error: 'Invalid token' });
   }
 }
 
 export function requireAdmin(req, res, next) {
-  if (!req.user?.isAdmin) return res.sendStatus(403);
+  if (!req.user?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
   next();
 }

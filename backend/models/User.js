@@ -32,7 +32,7 @@ const uiConfigSchema = new mongoose.Schema({
 
 const twoFactorAuthSchema = new mongoose.Schema({
   enabled: { type: Boolean, default: false },
-  method: { type: String, enum: ['email', 'sms', 'app'], default: null },
+  method: { type: String, enum: ['email', 'sms', 'app'] },
   backupCodes: [{
     code: String,
     used: { type: Boolean, default: false }
