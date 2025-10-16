@@ -26,5 +26,5 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "installCommand": "npm install --no-optional --prefer-offline --no-audit"
+  "installCommand": "npm ci --omit=optional --prefer-offline --no-audit"
 }
