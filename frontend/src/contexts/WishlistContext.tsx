@@ -37,7 +37,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
     if (savedWishlist) {
       try {
         const parsed: WishlistItem[] = JSON.parse(savedWishlist);
-        // Convert date strings back to Date objects
+       
         const converted: WishlistItem[] = parsed.map((item) => ({
           ...item,
           addedAt: new Date(item.addedAt),

@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
     
-    // Validate password length
+   
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
@@ -82,8 +82,7 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 });
-
-// Check if email exists (for testing)
+
 router.get('/check-email/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -93,8 +92,7 @@ router.get('/check-email/:email', async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 });
-
-// Delete user (for testing only)
+
 router.delete('/delete-test-user/:email', async (req, res) => {
   try {
     const { email } = req.params;

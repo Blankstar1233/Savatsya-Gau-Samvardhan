@@ -1,16 +1,15 @@
 import WebSocket, { WebSocketServer } from 'ws';
-
-// Simple WebSocket server helper. Attach to an existing HTTP server.
+
 export function attachWebsocket(server, options = {}) {
   const wss = new WebSocketServer({ server, path: options.path || '/ws' });
 
-  // Track connected clients
+ 
   wss.on('connection', (ws, req) => {
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
 
     ws.on('message', (message) => {
-      // Echo or handle incoming messages 
+     
       try {
         const data = JSON.parse(message.toString());
       
@@ -23,7 +22,7 @@ export function attachWebsocket(server, options = {}) {
     });
   });
 
-  // Heartbeat
+ 
   const interval = setInterval(() => {
     wss.clients.forEach((ws) => {
       if (ws.isAlive === false) return ws.terminate();
@@ -32,7 +31,7 @@ export function attachWebsocket(server, options = {}) {
     });
   }, 30000);
 
-  // Broadcast helper
+ 
   function broadcast(data) {
     const text = typeof data === 'string' ? data : JSON.stringify(data);
     wss.clients.forEach((client) => {

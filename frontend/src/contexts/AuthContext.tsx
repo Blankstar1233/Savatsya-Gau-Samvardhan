@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // On mount, check for JWT and fetch user info
+   
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoading(true);
@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
     localStorage.setItem('token', data.token);
-    // After login, fetch complete profile to ensure latest persisted data
+   
     try {
       const meRes = await fetch('/api/user/me', {
         headers: { Authorization: `Bearer ${data.token}` }
@@ -170,7 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
   };
 
-  // Preferences and profile management (client-side; can be wired to backend later)
+ 
   const updatePreferences = (prefs: UserPreferences) => {
     setUser(prev => prev ? { ...prev, preferences: prefs } : prev);
     const token = localStorage.getItem('token');
@@ -214,7 +214,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const result = await response.json();
       console.log('Profile updated successfully:', result);
       
-      // Update local state only after successful API call
+     
       console.log('Updating local user state with:', updates);
       setUser(prev => {
         const newUser = prev ? { ...prev, ...updates } : prev;
@@ -224,7 +224,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
     } catch (error) {
       console.error('Error updating user profile:', error);
-      // You might want to show a toast notification here
+     
       throw error;
     }
   };

@@ -60,21 +60,21 @@ const ProfileManager: React.FC = () => {
   const { user, updateUser, addAddress, updateAddress, deleteAddress } = useAuth();
   const { toast } = useToast();
   
-  // State for various forms and dialogs
+ 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   
-  // Form states
+ 
   const [profileForm, setProfileForm] = useState<ProfileFormData>({
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
   });
 
-  // Sync form state with user data changes
+ 
   React.useEffect(() => {
     if (user) {
       setProfileForm({
@@ -86,7 +86,7 @@ const ProfileManager: React.FC = () => {
     }
   }, [user]);
 
-  // Update form when user data changes
+ 
   React.useEffect(() => {
     if (user) {
       setProfileForm({
@@ -106,11 +106,11 @@ const ProfileManager: React.FC = () => {
     isDefault: false,
   });
 
-  // Profile picture upload handler
+ 
   const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "File too large",
           description: "Please select an image smaller than 5MB",
@@ -124,7 +124,7 @@ const ProfileManager: React.FC = () => {
         const result = e.target?.result as string;
         
         try {
-          // Update profile picture on server
+         
           await updateUser({ profilePicture: result });
           setProfilePicture(result);
           toast({
@@ -144,7 +144,7 @@ const ProfileManager: React.FC = () => {
     }
   };
 
-  // Profile form handlers
+ 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Profile form submission started with data:', profileForm);
@@ -171,7 +171,7 @@ const ProfileManager: React.FC = () => {
     }
   };
 
-  // Address form handlers
+ 
   const handleAddressSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -229,7 +229,7 @@ const ProfileManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Profile Information Card */}
+      {}
       <AnimatedCard delay={0.1}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -248,7 +248,7 @@ const ProfileManager: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Profile Picture Section */}
+          {}
           <div className="flex items-center space-x-6 mb-6">
             <div className="relative">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center">
@@ -273,21 +273,7 @@ const ProfileManager: React.FC = () => {
               <input
                 id="profile-picture-upload"
                 type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleProfilePictureUpload}
-              />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-sawatsya-wood">{user.name}</h3>
-              <p className="text-gray-600">{user.email}</p>
-              <Badge variant="secondary" className="mt-1">
-                Member since {new Date().getFullYear()}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Profile Form */}
+                accept="image}
           {isEditingProfile ? (
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -370,7 +356,7 @@ const ProfileManager: React.FC = () => {
         </CardContent>
       </AnimatedCard>
 
-      {/* Address Management Card */}
+      {}
       <AnimatedCard delay={0.2}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">

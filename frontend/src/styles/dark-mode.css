@@ -28,7 +28,7 @@
   --ring: 45 38% 85%;
 }
 
-/* Dark mode component overrides */
+
 .dark .product-card {
   background-color: hsl(var(--card));
   border-color: hsl(var(--border));
@@ -87,7 +87,7 @@
   border-top: 1px solid hsl(var(--border));
 }
 
-/* Dark mode form elements */
+
 .dark input,
 .dark textarea,
 .dark select {
@@ -101,7 +101,7 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Dark mode card and container styles */
+
 .dark .section-container {
   background-color: transparent;
 }
@@ -111,7 +111,7 @@
   border-color: hsl(var(--border));
 }
 
-/* Dark mode table styles */
+
 .dark table {
   border-color: hsl(var(--border));
 }

@@ -7,8 +7,7 @@ import cloudinary from '../utils/cloudinary.js';
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
-
-// Get current user
+
 router.get('/me', authenticateJWT, async (req, res) => {
   const user = await User.findById(req.user.userId).lean();
   if (!user) return res.status(404).json({ error: 'User not found' });
@@ -24,8 +23,7 @@ router.get('/me', authenticateJWT, async (req, res) => {
     uiConfig: user.uiConfig || {}
   });
 });
-
-// Update profile basic info
+
 router.put('/profile', authenticateJWT, async (req, res) => {
   const { name, email, phone, avatar, profilePicture } = req.body;
   console.log(`Profile update request for user ${req.user.userId}:`, { name, email, phone, avatar: avatar ? 'provided' : 'not provided', profilePicture: profilePicture ? 'provided' : 'not provided' });
@@ -34,8 +32,8 @@ router.put('/profile', authenticateJWT, async (req, res) => {
   if (name !== undefined) updates.name = name;
   if (phone !== undefined) updates.phone = phone;
   if (email !== undefined) updates.email = email.toLowerCase();
-  if (avatar !== undefined) updates.avatar = avatar; // store Data URL or URL from Cloudinary
-  if (profilePicture !== undefined) updates.profilePicture = profilePicture; // support both fields
+  if (avatar !== undefined) updates.avatar = avatar;
+  if (profilePicture !== undefined) updates.profilePicture = profilePicture;
   
   console.log('Applying updates:', { ...updates, avatar: updates.avatar ? 'provided' : undefined, profilePicture: updates.profilePicture ? 'base64 data' : undefined });
   
@@ -44,12 +42,11 @@ router.put('/profile', authenticateJWT, async (req, res) => {
   
   return res.json({ ok: true, user });
 });
-
-// Upload avatar (multipart/form-data) -> stores on Cloudinary and saves URL on user
+
 router.post('/avatar', authenticateJWT, upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    // upload buffer to cloudinary
+   
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream({ folder: 'avatars' }, (error, result) => {
         if (error) return reject(error);
@@ -65,8 +62,7 @@ router.post('/avatar', authenticateJWT, upload.single('avatar'), async (req, res
     return res.status(500).json({ error: 'Upload failed' });
   }
 });
-
-// Update preferences
+
 router.put('/preferences', authenticateJWT, async (req, res) => {
   const { preferences, uiConfig } = req.body;
   const user = await User.findById(req.user.userId);
@@ -76,8 +72,7 @@ router.put('/preferences', authenticateJWT, async (req, res) => {
   await user.save();
   return res.json({ ok: true });
 });
-
-// Address CRUD
+
 router.post('/addresses', authenticateJWT, async (req, res) => {
   const addr = req.body;
   const user = await User.findById(req.user.userId);
@@ -111,8 +106,7 @@ router.delete('/addresses/:id', authenticateJWT, async (req, res) => {
   await user.save();
   return res.json({ ok: true });
 });
-
-// Change Password
+
 router.put('/change-password', authenticateJWT, async (req, res) => {
   console.log('=== CHANGE PASSWORD REQUEST ===');
   console.log('User ID:', req.user?.userId);
@@ -142,7 +136,7 @@ router.put('/change-password', authenticateJWT, async (req, res) => {
 
     console.log('User found:', user.email);
 
-    // Verify current password
+   
     const bcrypt = await import('bcryptjs');
     const isValidPassword = await bcrypt.compare(currentPassword, user.password);
     console.log('Current password valid:', isValidPassword);
@@ -152,12 +146,12 @@ router.put('/change-password', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'Current password is incorrect' });
     }
 
-    // Hash new password
+   
     const saltRounds = 10;
     const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
     console.log('New password hashed successfully');
     
-    // Update password
+   
     user.password = hashedNewPassword;
     user.passwordChangedAt = new Date();
     await user.save();
@@ -173,17 +167,16 @@ router.put('/change-password', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// Enable/Disable Two-Factor Authentication
+
 router.put('/two-factor', authenticateJWT, async (req, res) => {
   try {
-    const { enable, method = 'email' } = req.body; // email, sms, or app
+    const { enable, method = 'email' } = req.body;
     
     const user = await User.findById(req.user.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     if (enable) {
-      // Generate backup codes
+     
       const backupCodes = Array.from({ length: 8 }, () => 
         Math.random().toString(36).substring(2, 8).toUpperCase()
       );
@@ -223,23 +216,22 @@ router.put('/two-factor', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// Download user data (GDPR compliance)
+
 router.get('/download-data', authenticateJWT, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Get user's orders (if Order model exists)
+   
     let orders = [];
     try {
       const Order = (await import('../models/Order.js')).default;
       orders = await Order.find({ userId: req.user.userId }).lean();
     } catch (e) {
-      // Order model might not exist
+     
     }
 
-    // Prepare user data export
+   
     const userData = {
       profile: {
         id: user._id,
@@ -263,7 +255,7 @@ router.get('/download-data', authenticateJWT, async (req, res) => {
       exportVersion: '1.0'
     };
 
-    // Set headers for file download
+   
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename="my-data-${user.email}-${new Date().toISOString().split('T')[0]}.json"`);
     
@@ -273,8 +265,7 @@ router.get('/download-data', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// Delete account (soft delete with grace period)
+
 router.delete('/account', authenticateJWT, async (req, res) => {
   try {
     const { password, confirmation } = req.body;
@@ -290,14 +281,14 @@ router.delete('/account', authenticateJWT, async (req, res) => {
     const user = await User.findById(req.user.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Verify password
+   
     const bcrypt = await import('bcryptjs');
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Password is incorrect' });
     }
 
-    // Soft delete with 30-day grace period
+   
     const deletionDate = new Date();
     deletionDate.setDate(deletionDate.getDate() + 30);
 
@@ -321,8 +312,7 @@ router.delete('/account', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// Cancel account deletion (during grace period)
+
 router.post('/cancel-deletion', authenticateJWT, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
@@ -332,7 +322,7 @@ router.post('/cancel-deletion', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'No account deletion scheduled' });
     }
 
-    // Remove deletion schedule and reactivate account
+   
     user.deletionScheduled = undefined;
     user.isActive = true;
     await user.save();

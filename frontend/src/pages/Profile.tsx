@@ -44,7 +44,7 @@ const Profile = () => {
             </AnimatedText>
           </div>
 
-          {/* 3D Persona Section */}
+          {}
           <AnimatedCard delay={0.2} className="mb-8">
             <CardHeader>
               <CardTitle className="text-center text-2xl font-serif text-sawatsya-wood">
@@ -56,7 +56,7 @@ const Profile = () => {
             </CardContent>
           </AnimatedCard>
 
-          {/* Tabbed Interface */}
+          {}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview" className="flex items-center space-x-2">
@@ -77,7 +77,7 @@ const Profile = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Overview Tab */}
+            {}
             <TabsContent value="overview" className="space-y-6">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatedCard delay={0.3}>
@@ -171,7 +171,7 @@ const Profile = () => {
                 </AnimatedCard>
               </div>
 
-              {/* Quick Actions */}
+              {}
               <AnimatedCard delay={0.7}>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
@@ -215,17 +215,17 @@ const Profile = () => {
               </AnimatedCard>
             </TabsContent>
 
-            {/* Profile Management Tab */}
+            {}
             <TabsContent value="profile">
               <ProfileManager />
             </TabsContent>
 
-            {/* Settings Tab */}
+            {}
             <TabsContent value="settings">
               <UserSettings />
             </TabsContent>
 
-            {/* Orders Tab */}
+            {}
             <TabsContent value="orders">
               <AnimatedCard>
                 <CardHeader>

@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Enhanced animations and interactions */
+
 @layer utilities {
   .animate-gradient {
     background-size: 400% 400%;
@@ -108,7 +108,7 @@
     --input: 30 15% 20%;
     --ring: 45 38% 85%;
 
-    /* Add dark mode overrides for custom components */
+    
     .product-card {
       @apply bg-card border-border;
     }
@@ -130,7 +130,7 @@
     }
   }
 
-  /* Color Schemes */
+  
   [data-color-scheme="warm"] {
     --primary: 25 75% 45%;
     --accent: 15 85% 55%;
@@ -151,7 +151,7 @@
     --muted: 40 10% 85%;
   }
 
-  /* Font Sizes */
+  
   [data-font-size="small"] {
     font-size: 14px;
   }
@@ -164,7 +164,7 @@
     font-size: 18px;
   }
 
-  /* High Contrast Mode */
+  
   .high-contrast {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
@@ -185,7 +185,7 @@
     --primary-foreground: 0 0% 0%;
   }
 
-  /* Animation Controls */
+  
   .no-animations *,
   .no-animations *::before,
   .no-animations *::after {
@@ -207,7 +207,7 @@
     transition-duration: 0.01ms !important;
   }
 
-  /* Respect user's motion preferences */
+  
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

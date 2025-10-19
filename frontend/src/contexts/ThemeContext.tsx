@@ -40,7 +40,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Load saved config
+   
     const savedConfig = localStorage.getItem('theme-config');
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
@@ -48,13 +48,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Determine if dark mode should be active
+   
     const shouldBeDark = config.theme === 'dark' || 
       (config.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     
     setIsDarkMode(shouldBeDark);
     
-    // Apply theme to document
+   
     const root = document.documentElement;
     if (shouldBeDark) root.classList.add('dark'); else root.classList.remove('dark');
     root.setAttribute('data-color-scheme', config.colorScheme);
@@ -63,10 +63,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     if (config.reduceMotion) root.classList.add('reduce-motion'); else root.classList.remove('reduce-motion');
     if (!config.animations) root.classList.add('no-animations'); else root.classList.remove('no-animations');
 
-    // Save config
+   
     localStorage.setItem('theme-config', JSON.stringify(config));
 
-    // Emit a small custom event so components that rely on CSS vars or classes update
+   
     try { window.dispatchEvent(new CustomEvent('theme:updated', { detail: config })); } catch (e) {}
   }, [config]);
 

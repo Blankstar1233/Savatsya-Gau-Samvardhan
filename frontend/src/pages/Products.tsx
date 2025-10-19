@@ -12,7 +12,7 @@ const Products = () => {
   const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState<string>(category || 'all');
   
-  // Filter products based on category
+ 
   const filteredProducts = activeCategory === 'all' 
     ? products 
     : getProductsByCategory(activeCategory as 'incense' | 'ghee');
@@ -27,7 +27,7 @@ const Products = () => {
       <div className="section-container">
         <h1 className="page-title">Our Products</h1>
         
-        {/* Category Navigation */}
+        {}
         <div className="flex justify-center mb-8">
           <div className="inline-flex rounded-md shadow-sm">
             <button
@@ -63,7 +63,7 @@ const Products = () => {
           </div>
         </div>
         
-        {/* Products Grid */}
+        {}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div key={product.id} className="product-card">

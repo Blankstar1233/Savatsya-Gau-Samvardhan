@@ -43,7 +43,7 @@ const Home = () => {
   return (
     <AnimatedPage>
       <div className="min-h-screen">
-        {/* Hero Section */}
+        {}
         <section className="hero-section flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
             <div className="max-w-lg">
@@ -66,7 +66,7 @@ const Home = () => {
         <div className="absolute top-0 right-0 h-full w-1/2 bg-sawatsya-sand opacity-30 hidden md:block"></div>
       </section>
       
-      {/* Product Categories */}
+      {}
       <section className="section-container">
         <h2 className="section-title text-center">Our Products</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
@@ -98,7 +98,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Featured Products */}
+      {}
       <section className="bg-sawatsya-sand/30 py-12 md:py-16">
         <div className="section-container">
           <AnimatedText variant="h2" className="section-title text-center">
@@ -131,7 +131,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* About Section */}
+      {}
       <section className="section-container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
@@ -152,7 +152,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Testimonials */}
+      {}
       <section className="bg-sawatsya-sand/30 py-12 md:py-16">
         <div className="section-container">
           <h2 className="section-title text-center">What Our Customers Say</h2>
@@ -179,7 +179,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Newsletter Signup */}
+      {}
       <section className="section-container">
         <div className="bg-sawatsya-cream rounded-lg p-8 text-center">
           <h2 className="text-2xl font-serif font-medium text-sawatsya-wood mb-4">Join Our Newsletter</h2>

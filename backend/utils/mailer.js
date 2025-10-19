@@ -17,8 +17,7 @@ function initMailer() {
     isInitialized = false;
   }
 }
-
-// Initialize immediately
+
 initMailer();
 
 export function isEmailEnabled() {
@@ -45,7 +44,7 @@ export async function sendEmail({ to, subject, html, text }) {
     },
     subject,
     html,
-    text: text || html?.replace(/<[^>]*>/g, '') // Strip HTML for text version
+    text: text || html?.replace(/<[^>]*>/g, '')
   };
 
   try {

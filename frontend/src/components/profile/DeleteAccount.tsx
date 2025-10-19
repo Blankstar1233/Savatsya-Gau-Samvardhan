@@ -80,7 +80,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ trigger }) => {
           description: `Your account will be deleted on ${new Date(data.deletionDate).toLocaleDateString()}. You have ${data.gracePeriodDays} days to cancel this action.`,
         });
         
-        // Log out the user after scheduling deletion
+       
         setTimeout(() => {
           logout();
         }, 2000);

@@ -52,7 +52,7 @@ const ProductDetail = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Product Image dalna */}
+        {}
         <div className="bg-white rounded-lg overflow-hidden shadow-sm">
           <ProductImage 
             src={product.image} 
@@ -61,7 +61,7 @@ const ProductDetail = () => {
           />
         </div>
         
-        {/* Product Details dalna*/}
+        {}
         <div>
           <h1 className="text-3xl font-serif font-medium text-sawatsya-wood mb-2">{product.name}</h1>
           
@@ -123,7 +123,7 @@ const ProductDetail = () => {
             </Button>
           </div>
           
-          {/* Additional Information */}
+          {}
           <div className="mt-8 border-t border-gray-200 pt-6">
             <h3 className="font-medium text-gray-700 mb-2">Additional Information:</h3>
             {product.category === 'incense' && (

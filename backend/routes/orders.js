@@ -5,37 +5,35 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { sendEmail, isEmailEnabled } from '../utils/mailer.js';
 
 const router = express.Router();
-
-// Get all orders for current user
+
 router.get('/', authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const orders = await Order.find({ userId });
   res.json(orders);
 });
-
-// Create a new order
+
 router.post('/', authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const { items, total } = req.body;
   const order = new Order({ userId, items, total });
   await order.save();
-  // Broadcast to websocket clients about the new order
+ 
   try {
     const broadcast = req.app?.locals?.broadcast;
     if (typeof broadcast === 'function') {
       broadcast({ type: 'order.created', data: order });
     }
   } catch (e) {
-    // non-fatal
+   
     console.warn('Failed to broadcast order.created', e?.message || e);
   }
 
-  // Send order confirmation email to the user (non-blocking)
+ 
   try {
     const user = await User.findById(userId).lean();
     const emailEnabled = isEmailEnabled();
     if (user && user.email && emailEnabled) {
-      // Build a small HTML summary of the order
+     
       const itemsHtml = (order.items || []).map(i => `
         <li>Product: ${i.productId} — Qty: ${i.quantity} — Price: ${i.price}</li>`).join('');
       const html = `
@@ -46,7 +44,7 @@ router.post('/', authenticateJWT, async (req, res) => {
         <p>We will notify you once your order is dispatched.</p>
       `;
 
-      // fire-and-forget so we don't delay the API response
+     
       sendEmail({ to: user.email, subject: 'Order confirmation — Savatsya Gau Samvardhan', html })
         .then(sent => console.info('[mailer] order confirmation sent:', !!sent))
         .catch(err => console.warn('[mailer] order confirmation failed:', err?.message || err));
@@ -55,11 +53,10 @@ router.post('/', authenticateJWT, async (req, res) => {
     console.warn('Failed to send order confirmation email', e?.message || e);
   }
 
-  // Return order + emailEnabled flag for the client if desired
+ 
   res.status(201).json({ order, emailEnabled: isEmailEnabled() });
 });
-
-// (Optional) Admin: get all orders
+
 router.get('/all', authenticateJWT, async (req, res) => {
   if (!req.user?.isAdmin) return res.status(403).json({ error: 'Admin access required' });
   const orders = await Order.find();

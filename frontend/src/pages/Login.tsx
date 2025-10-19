@@ -20,15 +20,15 @@ const Login = () => {
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedPassword = password.trim();
       if (isLogin) {
-        // Use AuthContext to perform login and update auth state
+       
         await login(normalizedEmail, normalizedPassword);
         toast.success('Successfully logged in!');
-        // Redirect to intended route or home
+       
         const state = (navigate as any).location?.state as { from?: Location } | undefined;
         const fromPath = state?.from?.pathname || '/';
         navigate(fromPath, { replace: true });
       } else {
-        // Register, then sign in via context, then redirect home
+       
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -42,12 +42,12 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');
-      // Ensure we stay on login page after failed login (don't show blank screen)
+     
       navigate('/login', { replace: true });
     }
   };
 
-  // Password reset not implemented for custom backend
+ 
   const handleForgotPassword = async () => {
     toast.error('Password reset is not implemented. Please contact support.');
   };
