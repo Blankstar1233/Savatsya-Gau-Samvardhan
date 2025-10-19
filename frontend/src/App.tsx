@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
 import "./index.css"
+import "./styles/dark-mode.css"
 
 // Layout
 import Navbar from "@/components/layout/navbar";

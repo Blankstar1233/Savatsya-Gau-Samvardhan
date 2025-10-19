@@ -107,6 +107,27 @@
     --border: 30 15% 20%;
     --input: 30 15% 20%;
     --ring: 45 38% 85%;
+
+    /* Add dark mode overrides for custom components */
+    .product-card {
+      @apply bg-card border-border;
+    }
+
+    .btn-primary {
+      @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    }
+
+    .btn-secondary {
+      @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+    }
+
+    .btn-accent {
+      @apply bg-accent text-accent-foreground hover:bg-accent/90;
+    }
+
+    .section-title, .page-title {
+      @apply text-foreground;
+    }
   }
 
   /* Color Schemes */
