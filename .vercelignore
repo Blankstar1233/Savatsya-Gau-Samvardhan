@@ -4,7 +4,6 @@ node_modules
 *.log
 .env
 .env.local
-.env.production
 backend/node_modules
 frontend/node_modules
 .vscode
@@ -16,3 +15,6 @@ docker-compose.yml
 Dockerfile
 backend/Dockerfile
 frontend/Dockerfile
+backend/
+devops/
+tools/

@@ -273,7 +273,12 @@ const ProfileManager: React.FC = () => {
               <input
                 id="profile-picture-upload"
                 type="file"
-                accept="image}
+                accept="image/*"
+                onChange={handleProfilePictureUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
           {isEditingProfile ? (
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
