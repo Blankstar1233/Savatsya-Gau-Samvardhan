@@ -28,6 +28,16 @@
   --ring: 45 38% 85%;
 }
 
+.dark body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark #root {
+  background-color: hsl(var(--background));
+  min-height: 100vh;
+}
+
 
 .dark .product-card {
   background-color: hsl(var(--card));
@@ -93,7 +103,11 @@
 .dark select {
   background-color: hsl(var(--input));
   border-color: hsl(var(--border));
-  color: hsl(var(--foreground));
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark input[type="password"] {
+  color: hsl(var(--foreground)) !important;
 }
 
 .dark input::placeholder,

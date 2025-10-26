@@ -12,10 +12,12 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
 import "./index.css"
 import "./styles/dark-mode.css"
-
+
+
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-
+
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";

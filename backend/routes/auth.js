@@ -82,7 +82,8 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 });
-
+
+
 router.get('/check-email/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -92,7 +93,8 @@ router.get('/check-email/:email', async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 });
-
+
+
 router.delete('/delete-test-user/:email', async (req, res) => {
   try {
     const { email } = req.params;

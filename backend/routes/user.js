@@ -7,7 +7,8 @@ import cloudinary from '../utils/cloudinary.js';
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
-
+
+
 router.get('/me', authenticateJWT, async (req, res) => {
   const user = await User.findById(req.user.userId).lean();
   if (!user) return res.status(404).json({ error: 'User not found' });
@@ -23,7 +24,8 @@ router.get('/me', authenticateJWT, async (req, res) => {
     uiConfig: user.uiConfig || {}
   });
 });
-
+
+
 router.put('/profile', authenticateJWT, async (req, res) => {
   const { name, email, phone, avatar, profilePicture } = req.body;
   console.log(`Profile update request for user ${req.user.userId}:`, { name, email, phone, avatar: avatar ? 'provided' : 'not provided', profilePicture: profilePicture ? 'provided' : 'not provided' });
@@ -42,7 +44,8 @@ router.put('/profile', authenticateJWT, async (req, res) => {
   
   return res.json({ ok: true, user });
 });
-
+
+
 router.post('/avatar', authenticateJWT, upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -62,7 +65,8 @@ router.post('/avatar', authenticateJWT, upload.single('avatar'), async (req, res
     return res.status(500).json({ error: 'Upload failed' });
   }
 });
-
+
+
 router.put('/preferences', authenticateJWT, async (req, res) => {
   const { preferences, uiConfig } = req.body;
   const user = await User.findById(req.user.userId);
@@ -72,7 +76,8 @@ router.put('/preferences', authenticateJWT, async (req, res) => {
   await user.save();
   return res.json({ ok: true });
 });
-
+
+
 router.post('/addresses', authenticateJWT, async (req, res) => {
   const addr = req.body;
   const user = await User.findById(req.user.userId);
@@ -106,7 +111,8 @@ router.delete('/addresses/:id', authenticateJWT, async (req, res) => {
   await user.save();
   return res.json({ ok: true });
 });
-
+
+
 router.put('/change-password', authenticateJWT, async (req, res) => {
   console.log('=== CHANGE PASSWORD REQUEST ===');
   console.log('User ID:', req.user?.userId);
@@ -167,7 +173,8 @@ router.put('/change-password', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+
+
 router.put('/two-factor', authenticateJWT, async (req, res) => {
   try {
     const { enable, method = 'email' } = req.body;
@@ -216,7 +223,8 @@ router.put('/two-factor', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+
+
 router.get('/download-data', authenticateJWT, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).lean();
@@ -265,7 +273,8 @@ router.get('/download-data', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+
+
 router.delete('/account', authenticateJWT, async (req, res) => {
   try {
     const { password, confirmation } = req.body;
@@ -312,7 +321,8 @@ router.delete('/account', authenticateJWT, async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+
+
 router.post('/cancel-deletion', authenticateJWT, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);

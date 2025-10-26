@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { API_ENDPOINTS } from '@/config/api';
 
 
 export interface TwoFactorAuth {
@@ -67,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoading(true);
-      fetch('/api/user/me', {
+      fetch(API_ENDPOINTS.USER.ME, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -103,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -113,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('token', data.token);
    
     try {
-      const meRes = await fetch('/api/user/me', {
+      const meRes = await fetch(API_ENDPOINTS.USER.ME, {
         headers: { Authorization: `Bearer ${data.token}` }
       });
       const me = await meRes.json();
@@ -155,7 +156,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (userData: Partial<User>, password: string) => {
     setIsLoading(true);
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: userData.email, password })
@@ -175,7 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(prev => prev ? { ...prev, preferences: prefs } : prev);
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/user/preferences', {
+      fetch(API_ENDPOINTS.USER.PREFERENCES, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ preferences: prefs })
@@ -194,7 +195,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log('Making API call to /api/user/profile with token:', token ? 'present' : 'missing');
 
     try {
-      const response = await fetch('/api/user/profile', {
+      const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json', 
@@ -242,7 +243,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/user/addresses', {
+      fetch(API_ENDPOINTS.USER.ADDRESSES, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ id: `addr_${Date.now()}`, ...address })
@@ -264,7 +265,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     const token = localStorage.getItem('token');
     if (token) {
-      fetch(`/api/user/addresses/${id}`, {
+      fetch(API_ENDPOINTS.USER.ADDRESS(id), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(updates)
@@ -276,7 +277,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(prev => prev ? { ...prev, address: (prev.address || []).filter(a => a.id !== id) } : prev);
     const token = localStorage.getItem('token');
     if (token) {
-      fetch(`/api/user/addresses/${id}`, {
+      fetch(API_ENDPOINTS.USER.ADDRESS(id), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       }).catch(() => {});
