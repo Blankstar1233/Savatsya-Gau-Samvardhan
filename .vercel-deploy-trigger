@@ -1,0 +1,11 @@
+# Force Vercel Redeploy
+
+This file is added to trigger a fresh Vercel deployment with the latest code.
+
+Latest commit should include:
+- Dark mode UI fixes
+- Login API configuration
+- CORS updates
+- Environment variable support
+
+Deployment timestamp: October 26, 2025
