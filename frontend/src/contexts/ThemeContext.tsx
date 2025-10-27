@@ -40,10 +40,15 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-   
+    // Load saved config or use defaults
     const savedConfig = localStorage.getItem('theme-config');
     if (savedConfig) {
-      setConfig(JSON.parse(savedConfig));
+      const parsed = JSON.parse(savedConfig);
+      // Force override if it's still set to 'system' (migration from old default)
+      if (parsed.theme === 'system') {
+        parsed.theme = 'light';
+      }
+      setConfig(parsed);
     }
   }, []);
 
