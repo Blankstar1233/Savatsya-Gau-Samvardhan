@@ -13,8 +13,9 @@ interface QRCodePaymentProps {
 const QRCodePayment = ({ amount, onPaymentComplete, onCancel }: QRCodePaymentProps) => {
   const { toast } = useToast();
   
- 
-  const upiPaymentLink = `upi://pay?pa=8788277595@axl&pn=SAVATSYA GAU SAMVARDHAN&am=${amount}&cu=INR&tn=Payment for Savatsya Gau Samvardhan products`;
+  // Get UPI ID from environment variable
+  const upiId = import.meta.env.VITE_UPI_ID || '8788277595@axl';
+  const upiPaymentLink = `upi://pay?pa=${upiId}&pn=SAVATSYA GAU SAMVARDHAN&am=${amount}&cu=INR&tn=Payment for Savatsya Gau Samvardhan products`;
   
   const handleManualComplete = () => {
     toast({
