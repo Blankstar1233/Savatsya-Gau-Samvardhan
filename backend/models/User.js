@@ -50,33 +50,32 @@ const deletionScheduleSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  avatar: { type: String, default: null },
   name: { type: String },
   phone: { type: String },
-  profilePicture: { type: String }, // Base64 encoded image or URL
+  profilePicture: { type: String },
   address: [addressSchema],
   preferences: { type: preferencesSchema, default: () => ({}) },
   uiConfig: { type: uiConfigSchema, default: () => ({}) },
   cart: [{ type: Object }],
   
-  // Security fields
+ 
   passwordChangedAt: Date,
   twoFactorAuth: { type: twoFactorAuthSchema, default: () => ({}) },
   isActive: { type: Boolean, default: true },
   deletionScheduled: deletionScheduleSchema,
   
-  // Timestamps
+ 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
-// Hash password before saving
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
-// Password comparison method
+
 userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

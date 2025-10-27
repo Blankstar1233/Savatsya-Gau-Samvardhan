@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Settings, Heart, Package, MapPin, Activity, Mail } from 'lucide-react';
-import Persona3D from '@/components/profile/Persona3D';
 import ProfileManager from '@/components/profile/ProfileManager';
 import UserSettings from '@/components/profile/UserSettings';
 import AnimatedPage from '@/components/ui/AnimatedPage';
@@ -44,19 +43,28 @@ const Profile = () => {
             </AnimatedText>
           </div>
 
-          {/* 3D Persona Section */}
+          {}
           <AnimatedCard delay={0.2} className="mb-8">
             <CardHeader>
-              <CardTitle className="text-center text-2xl font-serif text-sawatsya-wood">
+              <CardTitle className="text-center text-2xl font-serif text-sawatsya-wood dark:text-gray-100">
                 Welcome Back, {user.name}!
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Persona3D />
+              <div className="text-center py-8">
+                <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-sawatsya-earth flex items-center justify-center">
+                  {user.profilePicture ? (
+                    <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    <span className="text-white text-4xl font-bold">{user.name?.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <p className="text-lg text-gray-600 dark:text-gray-400">{user.email}</p>
+              </div>
             </CardContent>
           </AnimatedCard>
 
-          {/* Tabbed Interface */}
+          {}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview" className="flex items-center space-x-2">
@@ -77,7 +85,7 @@ const Profile = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Overview Tab */}
+            {}
             <TabsContent value="overview" className="space-y-6">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatedCard delay={0.3}>
@@ -171,7 +179,7 @@ const Profile = () => {
                 </AnimatedCard>
               </div>
 
-              {/* Quick Actions */}
+              {}
               <AnimatedCard delay={0.7}>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
@@ -215,17 +223,17 @@ const Profile = () => {
               </AnimatedCard>
             </TabsContent>
 
-            {/* Profile Management Tab */}
+            {}
             <TabsContent value="profile">
               <ProfileManager />
             </TabsContent>
 
-            {/* Settings Tab */}
+            {}
             <TabsContent value="settings">
               <UserSettings />
             </TabsContent>
 
-            {/* Orders Tab */}
+            {}
             <TabsContent value="orders">
               <AnimatedCard>
                 <CardHeader>

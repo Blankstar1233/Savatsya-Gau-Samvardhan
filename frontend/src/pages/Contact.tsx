@@ -18,7 +18,7 @@ const Contact = () => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // This would be connected to a real backend in a production app
+   
     toast.success('Your message has been sent successfully!');
     setFormData({
       name: '',
@@ -43,7 +43,7 @@ const Contact = () => {
       
       <section className="section-container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
+          {}
           <div>
             <h2 className="text-2xl font-serif font-medium text-sawatsya-wood mb-6">Send Us a Message</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,7 +119,7 @@ const Contact = () => {
             </form>
           </div>
           
-          {/* Contact Information */}
+          {}
           <div>
             <h2 className="text-2xl font-serif font-medium text-sawatsya-wood mb-6">Contact Information</h2>
             
@@ -189,7 +189,7 @@ const Contact = () => {
         </div>
       </section>
       
-      {/* Map Section (Placeholder) */}
+      {}
       <section className="mt-12">
         <div className="h-80 bg-sawatsya-sand flex items-center justify-center">
           <p className="text-sawatsya-wood font-medium">Map Location Placeholder</p>

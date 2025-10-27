@@ -28,7 +28,7 @@ const Navbar = () => {
   };
 
   const handleLocateUs = () => {
-    // Open Google Maps with directions to the actual company location
+   
     const mapsUrl = "https://www.google.com/maps/place/Savatsa+Gau+Savardhan/@19.1286699,73.2314941,17z/data=!3m1!4b1!4m6!3m5!1s0x3be7ed005b6d2dd1:0xc4ef2742f5d9bfad!8m2!3d19.1286648!4d73.234069!16s%2Fg%2F11x5lg19np?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D";
     window.open(mapsUrl, '_blank');
   };
@@ -62,11 +62,17 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta">
                     <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-sawatsya-earth text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center text-sm font-medium">
+                          {(() => {
+                            const avatarSrc = user?.avatar || user?.profilePicture || null;
+                            if (avatarSrc) {
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                            }
+                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                          })()}
+                        </div>
+                        <span className="hidden lg:block">{user?.name}</span>
                       </div>
-                      <span className="hidden lg:block">{user?.name}</span>
-                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -126,7 +132,7 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile menu */}
+      {}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-sawatsya-sand animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -169,9 +175,15 @@ const Navbar = () => {
               <>
                 <div className="px-3 py-2 border-t border-sawatsya-sand">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-sawatsya-earth text-white rounded-full flex items-center justify-center text-sm font-medium">
-                      {user?.name?.charAt(0).toUpperCase() || 'U'}
-                    </div>
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth text-white flex items-center justify-center text-sm font-medium">
+                          {(() => {
+                            const avatarSrc = user?.avatar || user?.profilePicture || null;
+                            if (avatarSrc) {
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                            }
+                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                          })()}
+                        </div>
                     <div>
                       <p className="text-sm font-medium text-sawatsya-wood">{user?.name}</p>
                       <p className="text-xs text-gray-500">{user?.email}</p>

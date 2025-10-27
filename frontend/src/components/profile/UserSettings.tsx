@@ -83,7 +83,7 @@ const UserSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Theme & Display Settings */}
+      {}
       <AnimatedCard delay={0.1}>
         <CardHeader>
           <CardTitle className="flex items-center">
@@ -92,7 +92,7 @@ const UserSettings: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Theme Selection */}
+          {}
           <div className="space-y-2">
             <Label>{t('theme') || 'Theme'}</Label>
             <div className="flex space-x-2">
@@ -126,7 +126,7 @@ const UserSettings: React.FC = () => {
             </div>
           </div>
 
-          {/* Color Scheme */}
+          {}
           <div className="space-y-2">
             <Label>{t('color-scheme') || 'Color Scheme'}</Label>
             <Select value={config.colorScheme} onValueChange={(value: any) => setColorScheme(value)}>
@@ -142,7 +142,7 @@ const UserSettings: React.FC = () => {
             </Select>
           </div>
 
-          {/* Font Size */}
+          {}
           <div className="space-y-2">
             <Label>{t('font-size') || 'Font Size'}</Label>
             <Select value={config.fontSize} onValueChange={(value: any) => setFontSize(value)}>
@@ -157,7 +157,7 @@ const UserSettings: React.FC = () => {
             </Select>
           </div>
 
-          {/* Accessibility Options */}
+          {}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -184,7 +184,7 @@ const UserSettings: React.FC = () => {
         </CardContent>
       </AnimatedCard>
 
-      {/* Notification Settings */}
+      {}
       <AnimatedCard delay={0.2}>
         <CardHeader>
           <CardTitle className="flex items-center">
@@ -228,7 +228,7 @@ const UserSettings: React.FC = () => {
         </CardContent>
       </AnimatedCard>
 
-      {/* Language Settings */}
+      {}
       <AnimatedCard delay={0.3}>
         <CardHeader>
           <CardTitle className="flex items-center">
@@ -273,7 +273,7 @@ const UserSettings: React.FC = () => {
         </CardContent>
       </AnimatedCard>
 
-      {/* Privacy & Security */}
+      {}
       <AnimatedCard delay={0.4}>
         <CardHeader>
           <CardTitle className="flex items-center">

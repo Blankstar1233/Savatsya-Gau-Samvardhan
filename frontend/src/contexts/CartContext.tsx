@@ -1,8 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-
-// Define product type
+
 export type Product = {
   id: string;
   name: string;
@@ -13,14 +12,12 @@ export type Product = {
   weight?: string;
   fragrance?: string;
 };
-
-// Define cart item type
+
 export type CartItem = {
   product: Product;
   quantity: number;
 };
-
-// Define cart context type
+
 type CartContextType = {
   items: CartItem[];
   addToCart: (product: Product, quantity: number) => void;
@@ -39,17 +36,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [totalPrice, setTotalPrice] = useState(0);
   const { user, isAuthenticated } = useAuth();
 
-  // Load cart from localStorage on component mount
+ 
   useEffect(() => {
     const load = async () => {
-      // TODO: if backend cart persistence is needed, fetch via REST here
+     
       const savedCart = localStorage.getItem('sawatsya-cart');
       if (savedCart) setItems(JSON.parse(savedCart));
     };
     load();
   }, [isAuthenticated, user?.id]);
 
-  // Save cart to localStorage whenever it changes
+ 
   useEffect(() => {
     if (items.length > 0) {
       localStorage.setItem('sawatsya-cart', JSON.stringify(items));
@@ -57,12 +54,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.removeItem('sawatsya-cart');
     }
     
-    // Calculate totals
+   
     setTotalItems(items.reduce((sum, item) => sum + item.quantity, 0));
     setTotalPrice(items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0));
   }, [items]);
 
-  // Add product to cart
+ 
   const addToCart = (product: Product, quantity: number) => {
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.product.id === product.id);
@@ -77,21 +74,21 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       return [...prevItems, { product, quantity }];
     });
-    // Optional: send to backend via REST
+   
   };
 
-  // Remove product from cart
+ 
   const removeFromCart = (productId: string) => {
     setItems(prevItems => prevItems.filter(item => item.product.id !== productId));
     
-    // Remove from localStorage if cart becomes empty
+   
     if (items.length === 1) {
       localStorage.removeItem('sawatsya-cart');
     }
-    // Optional: send to backend via REST
+   
   };
 
-  // Update quantity of product in cart
+ 
   const updateQuantity = (productId: string, quantity: number) => {
     if (quantity < 1) {
       removeFromCart(productId);
@@ -105,14 +102,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : item
       )
     );
-    // Optional: send to backend via REST
+   
   };
 
-  // Clear cart
+ 
   const clearCart = () => {
     setItems([]);
     localStorage.removeItem('sawatsya-cart');
-    // Optional: send to backend via REST
+   
   };
 
   return (

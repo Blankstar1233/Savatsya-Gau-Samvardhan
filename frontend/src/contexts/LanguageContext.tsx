@@ -16,8 +16,7 @@ interface Translations {
     [lang in Language]: string;
   };
 }
-
-// Translation data
+
 const translations: Translations = {
   welcome: {
     en: 'Welcome',
@@ -275,8 +274,7 @@ const translations: Translations = {
     mr: 'डाउनलोड करा'
   }
 };
-
-// Currency symbols and formats
+
 const currencyConfig = {
   INR: { symbol: '₹', code: 'INR', name: 'Indian Rupee' },
   USD: { symbol: '$', code: 'USD', name: 'US Dollar' },
@@ -308,7 +306,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<LanguageConfig>(defaultConfig);
 
   useEffect(() => {
-    // Load saved config
+   
     const savedConfig = localStorage.getItem('language-config');
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
@@ -316,21 +314,21 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Save config
+   
     localStorage.setItem('language-config', JSON.stringify(config));
     
-    // Update document language
+   
     document.documentElement.lang = config.language;
     
-    // Update document direction for RTL languages (if needed in future)
-    document.documentElement.dir = 'ltr'; // All our languages are LTR
+   
+    document.documentElement.dir = 'ltr';
   }, [config]);
 
   const setLanguage = (language: Language) => {
     const newConfig = { ...config, language };
     setConfig(newConfig);
     
-    // Save to backend if user is logged in
+   
     const token = localStorage.getItem('token');
     if (token) {
       fetch('/api/user/preferences', {
@@ -351,7 +349,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     const newConfig = { ...config, currency };
     setConfig(newConfig);
     
-    // Save to backend if user is logged in
+   
     const token = localStorage.getItem('token');
     if (token) {
       fetch('/api/user/preferences', {

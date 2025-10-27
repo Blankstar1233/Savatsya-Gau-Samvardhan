@@ -57,7 +57,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Initialize session
+   
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const newSession: UserSession = {
       id: sessionId,
@@ -69,9 +69,9 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     };
     
     setCurrentSession(newSession);
-    // Persisting analytics to backend can be added here later via REST
+   
 
-    // Load existing analytics
+   
     const savedAnalytics = localStorage.getItem('user-analytics');
     if (savedAnalytics) {
       try {
@@ -93,18 +93,18 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    // Helper to end the current session safely
+   
     const endSession = () => {
       setCurrentSession(prevSession => {
         if (!prevSession || prevSession.endTime) return prevSession;
         const endedSession: UserSession = { ...prevSession, endTime: new Date() };
         setAnalytics(prev => ({ ...prev, sessions: [...prev.sessions, endedSession] }));
-        // TODO: optional backend persistence via REST
+       
         return endedSession;
       });
     };
 
-    // Track session end on various lifecycle events
+   
     const handleBeforeUnload = () => endSession();
     const handlePageHide = () => endSession();
     const handleVisibilityChange = () => {
@@ -116,7 +116,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      // On unmount, also end the session
+     
       endSession();
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('pagehide', handlePageHide);
@@ -125,7 +125,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Save analytics to localStorage
+   
     localStorage.setItem('user-analytics', JSON.stringify(analytics));
   }, [analytics]);
 
@@ -144,7 +144,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       actions: [...prev.actions, action]
     } : null);
-    // Optional: send to backend via REST
+   
   };
 
   const trackPageView = (page: string, title?: string) => {
@@ -154,7 +154,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       pageViews: prev.pageViews + 1
     } : null);
-    // Optional: update backend via REST
+   
 
     setAnalytics(prev => ({
       ...prev,
@@ -170,14 +170,14 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
       const index = popularProducts.indexOf(productId);
       
       if (index > -1) {
-        // Move to front if already exists
+       
         popularProducts.splice(index, 1);
       }
       popularProducts.unshift(productId);
       
       return {
         ...prev,
-        popularProducts: popularProducts.slice(0, 20) // Keep top 20
+        popularProducts: popularProducts.slice(0, 20)
       };
     });
   };
@@ -187,14 +187,14 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     
     setAnalytics(prev => ({
       ...prev,
-      searchTerms: [...prev.searchTerms, query].slice(-100) // Keep last 100 searches
+      searchTerms: [...prev.searchTerms, query].slice(-100)
     }));
   };
 
   const trackPurchase = (orderId: string, value: number, items: any[]) => {
     trackAction('purchase', { orderId, value, items });
     
-    // Update conversion rate
+   
     setAnalytics(prev => {
       const totalSessions = prev.sessions.length;
       const purchaseSessions = prev.sessions.filter(session => 

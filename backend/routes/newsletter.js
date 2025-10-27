@@ -3,8 +3,7 @@ import Subscriber from '../models/Subscriber.js';
 import { sendEmail, isEmailEnabled } from '../utils/mailer.js';
 
 const router = express.Router();
-
-// Subscribe endpoint
+
 router.post('/subscribe', async (req, res) => {
   try {
     const { email } = req.body;
@@ -13,7 +12,7 @@ router.post('/subscribe', async (req, res) => {
     const existing = await Subscriber.findOne({ email: normalized });
     if (existing) return res.json({ ok: true, message: 'Already subscribed' });
     await Subscriber.create({ email: normalized });
-    // Send welcome email (best-effort; subscription still succeeds even if email fails)
+   
     const emailResult = await sendEmail({
       to: normalized,
       subject: 'Subscribed to Savatsya Gau Samvardhan',

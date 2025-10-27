@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const About = () => {
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {}
       <section className="bg-sawatsya-cream py-16 md:py-24">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center">
@@ -18,7 +18,7 @@ const About = () => {
         </div>
       </section>
       
-      {/* Our Mission */}
+      {}
       <section className="section-container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
@@ -39,7 +39,7 @@ const About = () => {
         </div>
       </section>
       
-      {/* Our Values */}
+      {}
       <section className="bg-sawatsya-sand/30 py-12 md:py-16">
         <div className="section-container">
           <h2 className="section-title text-center">Our Values</h2>
@@ -68,7 +68,7 @@ const About = () => {
         </div>
       </section>
       
-      {/* Our Process */}
+      {}
       <section className="section-container">
         <h2 className="section-title text-center">Our Process</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
@@ -124,7 +124,7 @@ const About = () => {
         </div>
       </section>
       
-      {/* Our Team */}
+      {}
       <section className="bg-sawatsya-sand/30 py-12 md:py-16">
         <div className="section-container">
           <h2 className="section-title text-center">Meet Our Team</h2>
@@ -159,7 +159,7 @@ const About = () => {
         </div>
       </section>
       
-      {/* Call to Action */}
+      {}
       <section className="section-container">
         <div className="bg-sawatsya-cream rounded-lg p-8 text-center">
           <h2 className="text-2xl font-serif font-medium text-sawatsya-wood mb-4">Experience the Difference</h2>

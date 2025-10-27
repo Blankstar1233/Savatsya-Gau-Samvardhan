@@ -32,7 +32,7 @@ const DataDownload: React.FC<DataDownloadProps> = ({ trigger }) => {
         const a = document.createElement('a');
         a.href = url;
         
-        // Get filename from response headers or create default
+       
         const contentDisposition = response.headers.get('content-disposition');
         const filename = contentDisposition 
           ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')

@@ -6,20 +6,19 @@ interface ProductImageProps {
   alt: string;
   className?: string;
 }
-
-// This component handles product images with fallbacks
+
 const ProductImage: React.FC<ProductImageProps> = ({ src, alt, className = "" }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
-  // Function to generate placeholder based on alt text
+ 
   const generatePlaceholder = () => {
     const colors = [
       'bg-sawatsya-earth', 'bg-sawatsya-leaf', 
       'bg-sawatsya-terracotta', 'bg-sawatsya-amber'
     ];
     
-    // Use a hash of the alt text to consistently select the same color for the same product
+   
     const colorIndex = alt.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
     
     return (

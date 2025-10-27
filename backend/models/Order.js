@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
-  userId: { type: String, required: true }, // Supabase UID
+  userId: { type: String, required: true },
   items: [{
     productId: String,
     quantity: Number,

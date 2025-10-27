@@ -24,7 +24,7 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
-    // Check if 2FA is already enabled for this user
+   
     setIsEnabled(user?.twoFactorAuth?.enabled || false);
   }, [user]);
 
