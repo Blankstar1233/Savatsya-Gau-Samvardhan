@@ -6,6 +6,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import { products } from '@/data/products';
 import AnimatedPage from '@/components/ui/AnimatedPage';
 import { AnimatedCard, AnimatedText, AnimatedButton, FloatingElement } from '@/components/ui/AnimatedComponents';
+import { API_ENDPOINTS } from '@/config/api';
 import { toast } from 'sonner';
 
 const Home = () => {
@@ -24,7 +25,7 @@ const Home = () => {
     if (!email) return toast.error('Please enter your email');
     try {
       setSubmittingNewsletter(true);
-      const res = await fetch('/api/newsletter/subscribe', {
+      const res = await fetch(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

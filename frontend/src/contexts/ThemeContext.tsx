@@ -25,7 +25,7 @@ type ThemeContextType = {
 };
 
 const defaultConfig: ThemeConfig = {
-  theme: 'system',
+  theme: 'light',
   colorScheme: 'default',
   fontSize: 'medium',
   animations: true,
