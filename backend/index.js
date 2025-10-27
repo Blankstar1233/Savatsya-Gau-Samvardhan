@@ -10,10 +10,11 @@ import orderRoutes from './routes/orders.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import newsletterRoutes from './routes/newsletter.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 
+
+// Load environment variables early
+dotenv.config();
 
 const app = express();
 
@@ -40,14 +41,14 @@ app.use(cors({
 
 app.use(express.json());
 
+// Ensure MONGO_URI is present but don't crash the process; log a helpful warning instead
 if (!process.env.MONGO_URI) {
-  console.error("Missing MONGO_URI in backend/.env. Please set it to your MongoDB connection string.");
-  process.exit(1);
+  console.warn("Warning: MONGO_URI not set. Database connection will not be established. Set MONGO_URI in backend/.env or environment variables.");
+} else {
+  mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("MongoDB connected"))
+    .catch((err) => console.error("MongoDB connection error:", err));
 }
-
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

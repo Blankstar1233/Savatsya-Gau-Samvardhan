@@ -42,9 +42,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    console.log('Login successful');
-    const token = jwt.sign({ userId: user._id, email: user.email, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    return res.json({ token, email: user.email, userId: user._id, isAdmin: false });
+  console.log('Login successful');
+  // Use centralized signToken helper which validates JWT_SECRET
+  const token = signToken({ userId: user._id, email: user.email, isAdmin: false });
+  return res.json({ token, email: user.email, userId: user._id, isAdmin: false });
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Server error' });
@@ -91,9 +92,9 @@ router.get('/me', async (req, res) => {
       return res.status(401).json({ error: 'No token provided' });
     }
     
-    console.log('JWT_SECRET available:', !!process.env.JWT_SECRET);
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Token verified successfully. User ID:', payload.userId);
+  console.log('JWT_SECRET available:', !!process.env.JWT_SECRET);
+  const payload = verifyToken(token);
+  console.log('Token verified successfully. User ID:', payload.userId);
     
     const user = await User.findById(payload.userId).lean();
     if (!user) {

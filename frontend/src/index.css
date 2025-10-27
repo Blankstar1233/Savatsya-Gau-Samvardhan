@@ -80,33 +80,42 @@
   }
 
   .dark {
-    --background: 32 14% 8%;
-    --foreground: 45 38% 95%;
+    /* Rich, deep backgrounds with subtle warmth */
+    --background: 220 15% 9%;
+    --foreground: 45 20% 92%;
 
-    --card: 32 14% 12%;
-    --card-foreground: 45 38% 95%;
+    /* Elevated cards with depth */
+    --card: 220 14% 13%;
+    --card-foreground: 45 15% 90%;
 
-    --popover: 32 14% 12%;
-    --popover-foreground: 45 38% 95%;
+    /* Popovers slightly lighter than cards */
+    --popover: 220 14% 15%;
+    --popover-foreground: 45 15% 92%;
 
-    --primary: 45 38% 85%;
-    --primary-foreground: 32 14% 15%;
+    /* Warm, earthy primary accent */
+    --primary: 32 45% 58%;
+    --primary-foreground: 220 15% 10%;
 
-    --secondary: 30 15% 20%;
-    --secondary-foreground: 45 38% 95%;
+    /* Subtle secondary tones */
+    --secondary: 220 12% 18%;
+    --secondary-foreground: 45 15% 88%;
 
-    --muted: 30 15% 20%;
-    --muted-foreground: 30 15% 60%;
+    /* Muted elements with better contrast */
+    --muted: 220 12% 16%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 25 52% 51%;
-    --accent-foreground: 45 38% 95%;
+    /* Warm terracotta accent */
+    --accent: 18 60% 55%;
+    --accent-foreground: 45 15% 95%;
 
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 45 38% 95%;
+    /* Softer destructive */
+    --destructive: 0 65% 58%;
+    --destructive-foreground: 45 15% 95%;
 
-    --border: 30 15% 20%;
-    --input: 30 15% 20%;
-    --ring: 45 38% 85%;
+    /* Subtle borders and inputs */
+    --border: 220 12% 22%;
+    --input: 220 13% 15%;
+    --ring: 32 45% 58%;
 
     
     .product-card {
