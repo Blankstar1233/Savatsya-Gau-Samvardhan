@@ -1,8 +1,15 @@
 import sgMail from '@sendgrid/mail';
 
 let isInitialized = false;
+let initAttempted = false;
 
 function initMailer() {
+  if (initAttempted) return; // Only try to initialize once
+  initAttempted = true;
+  
+  console.log('[mailer] DEBUG - SENDGRID_API_KEY value:', process.env.SENDGRID_API_KEY ? 'EXISTS' : 'MISSING');
+  console.log('[mailer] DEBUG - FROM_EMAIL value:', process.env.FROM_EMAIL);
+  
   if (!process.env.SENDGRID_API_KEY) {
     console.warn('[mailer] SENDGRID_API_KEY not configured. Email functionality disabled.');
     return;
@@ -11,21 +18,27 @@ function initMailer() {
   try {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     isInitialized = true;
-    console.log('[mailer] SendGrid Web API initialized');
+    console.log('[mailer] SendGrid Web API initialized successfully');
   } catch (err) {
     console.error('[mailer] Failed to initialize SendGrid:', err?.message || err);
     isInitialized = false;
   }
 }
 
-// Initialize immediately
-initMailer();
+// Don't initialize immediately - wait for first use
 
 export function isEmailEnabled() {
+  if (!initAttempted) {
+    initMailer(); // Initialize on first check
+  }
   return isInitialized;
 }
 
 export async function sendEmail({ to, subject, html, text }) {
+  if (!initAttempted) {
+    initMailer(); // Initialize on first use
+  }
+  
   if (!isInitialized) {
     console.warn('[mailer] SendGrid not initialized. Skipping email send.');
     return { 
