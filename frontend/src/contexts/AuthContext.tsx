@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               phone: data.phone || '',
               profilePicture: data.profilePicture || '',
               preferences: data.preferences || {
-                theme: 'system',
+                theme: 'light',
                 language: 'en',
                 currency: 'INR',
                 notifications: { email: true, sms: true, push: true }
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           phone: me.phone || '',
           profilePicture: me.profilePicture || '',
           preferences: me.preferences || {
-            theme: 'system',
+            theme: 'light',
             language: 'en',
             currency: 'INR',
             notifications: { email: true, sms: true, push: true }
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           phone: data.phone || '',
           profilePicture: data.profilePicture || '',
           preferences: data.preferences || {
-            theme: 'system',
+            theme: 'light',
             language: 'en',
             currency: 'INR',
             notifications: { email: true, sms: true, push: true }
@@ -166,7 +166,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!res.ok) throw new Error(data.error || 'Registration failed');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const token = localStorage.getItem('token');
+    
+    // Call backend logout endpoint if token exists
+    if (token) {
+      try {
+        await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
+        console.error('Logout API call failed:', error);
+        // Continue with local logout even if API fails
+      }
+    }
+    
+    // Always clear local state and token
     setUser(null);
     localStorage.removeItem('token');
   };

@@ -25,6 +25,8 @@ import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import NotFound from "./pages/NotFound";
@@ -70,6 +72,8 @@ const App = () => (
                           <Route path="/product/:productId" element={<ProductDetail />} />
                           <Route path="/cart" element={<Cart />} />
                           <Route path="/login" element={<LoginRoute />} />
+                          <Route path="/forgot-password" element={<ForgotPassword />} />
+                          <Route path="/reset-password" element={<ResetPassword />} />
                           <Route
                             path="/profile"
                             element={

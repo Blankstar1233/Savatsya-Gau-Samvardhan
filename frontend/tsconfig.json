@@ -21,6 +21,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "../**", "../node_modules", "../backend"]
+  "include": [
+    "src",
+    "src/**/*",
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.js",
+    "src/**/*.jsx"
+  ],
+  "exclude": ["node_modules", "dist", "build", "**/*.test.*"]
 }

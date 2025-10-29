@@ -12,7 +12,7 @@ const addressSchema = new mongoose.Schema({
 }, { _id: false });
 
 const preferencesSchema = new mongoose.Schema({
-  theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
+  theme: { type: String, enum: ['light', 'dark', 'system'], default: 'light' },
   language: { type: String, enum: ['en', 'hi', 'mr'], default: 'en' },
   currency: { type: String, default: 'INR' },
   notifications: {
@@ -32,13 +32,18 @@ const uiConfigSchema = new mongoose.Schema({
 
 const twoFactorAuthSchema = new mongoose.Schema({
   enabled: { type: Boolean, default: false },
-  method: { type: String, enum: ['email', 'sms', 'app'] },
+  method: { 
+    type: String, 
+    enum: ['email', 'sms', 'app', null], 
+    default: null,
+    required: false
+  },
   backupCodes: [{
-    code: String,
+    code: { type: String, required: true },
     used: { type: Boolean, default: false }
   }],
-  enabledAt: Date,
-  disabledAt: Date
+  enabledAt: { type: Date, required: false },
+  disabledAt: { type: Date, required: false }
 }, { _id: false });
 
 const deletionScheduleSchema = new mongoose.Schema({
@@ -59,7 +64,9 @@ const userSchema = new mongoose.Schema({
   uiConfig: { type: uiConfigSchema, default: () => ({}) },
   cart: [{ type: Object }],
   
- 
+  // Password reset functionality
+  passwordResetToken: { type: String },
+  passwordResetExpires: { type: Date },
   passwordChangedAt: Date,
   twoFactorAuth: { type: twoFactorAuthSchema, default: () => ({}) },
   isActive: { type: Boolean, default: true },
@@ -69,13 +76,15 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
+
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
+
+
 userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

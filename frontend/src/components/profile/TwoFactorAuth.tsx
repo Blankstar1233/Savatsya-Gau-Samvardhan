@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -20,15 +21,32 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [method, setMethod] = useState<'email' | 'sms' | 'app'>('email');
+  const [password, setPassword] = useState('');
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
-   
     setIsEnabled(user?.twoFactorAuth?.enabled || false);
   }, [user]);
 
+  // Reset form when dialog opens/closes
+  useEffect(() => {
+    if (!open) {
+      setPassword('');
+      setBackupCodes([]);
+    }
+  }, [open]);
+
   const handleToggle2FA = async (enable: boolean) => {
+    if (!password) {
+      toast({
+        title: 'Error',
+        description: 'Password is required to enable/disable two-factor authentication',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -38,13 +56,18 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ enable, method: enable ? method : undefined })
+        body: JSON.stringify({ 
+          enable: enable, 
+          method: enable ? method : undefined,
+          password: password
+        })
       });
 
       const data = await response.json();
 
       if (data.ok) {
         setIsEnabled(enable);
+        setPassword(''); // Clear password after successful operation
         
         if (enable && data.backupCodes) {
           setBackupCodes(data.backupCodes);
@@ -141,6 +164,21 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
                 </Select>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="password">Confirm Your Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your current password"
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">
+                  Password confirmation is required for security purposes
+                </p>
+              </div>
+
               <div className="rounded-lg bg-blue-50 p-4">
                 <h4 className="font-medium text-blue-900">How it works:</h4>
                 <ul className="mt-2 text-sm text-blue-800 space-y-1">
@@ -149,6 +187,23 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
                   <li>• Your account will be significantly more secure</li>
                 </ul>
               </div>
+            </div>
+          )}
+
+          {isEnabled && (
+            <div className="space-y-2">
+              <Label htmlFor="disable-password">Confirm Your Password</Label>
+              <Input
+                id="disable-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your current password to disable 2FA"
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">
+                Password confirmation is required to disable two-factor authentication
+              </p>
             </div>
           )}
 
@@ -206,14 +261,14 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ trigger }) => {
               <Button
                 variant="destructive"
                 onClick={() => handleToggle2FA(false)}
-                disabled={loading}
+                disabled={loading || !password}
               >
                 {loading ? 'Disabling...' : t('disable')}
               </Button>
             ) : (
               <Button
                 onClick={() => handleToggle2FA(true)}
-                disabled={loading}
+                disabled={loading || !password}
               >
                 {loading ? 'Enabling...' : t('enable')}
               </Button>

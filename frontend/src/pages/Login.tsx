@@ -19,6 +19,13 @@ const Login = () => {
     try {
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedPassword = password.trim();
+      
+      // Validate name for registration
+      if (!isLogin && !name.trim()) {
+        toast.error('Name is required for registration');
+        return;
+      }
+      
       if (isLogin) {
        
         await login(normalizedEmail, normalizedPassword);
@@ -32,7 +39,7 @@ const Login = () => {
         const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: normalizedEmail, password: normalizedPassword })
+          body: JSON.stringify({ email: normalizedEmail, password: normalizedPassword, name: name.trim() })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Registration failed');
@@ -47,9 +54,8 @@ const Login = () => {
     }
   };
 
- 
-  const handleForgotPassword = async () => {
-    toast.error('Password reset is not implemented. Please contact support.');
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
   };
   
   return (

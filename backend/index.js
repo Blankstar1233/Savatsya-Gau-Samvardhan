@@ -10,11 +10,20 @@ import orderRoutes from './routes/orders.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import newsletterRoutes from './routes/newsletter.js';
+import webhookRoutes from './routes/webhooks.js';
+import emailRoutes from './routes/emails.js';
+import emailTestRoutes from './routes/emailTests.js';
 
 
 
 // Load environment variables early
 dotenv.config();
+
+console.log('[startup] Environment variables loaded:');
+console.log('[startup] MONGO_URI exists:', !!process.env.MONGO_URI);
+console.log('[startup] MONGO_URI length:', process.env.MONGO_URI?.length || 0);
+console.log('[startup] JWT_SECRET exists:', !!process.env.JWT_SECRET);
+console.log('[startup] SENDGRID_API_KEY exists:', !!process.env.SENDGRID_API_KEY);
 
 const app = express();
 
@@ -45,9 +54,47 @@ app.use(express.json());
 if (!process.env.MONGO_URI) {
   console.warn("Warning: MONGO_URI not set. Database connection will not be established. Set MONGO_URI in backend/.env or environment variables.");
 } else {
-  mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.error("MongoDB connection error:", err));
+  // Enhanced MongoDB connection with better timeout settings
+  const mongooseOptions = {
+    serverSelectionTimeoutMS: 30000, // 30 seconds
+    connectTimeoutMS: 30000, // 30 seconds
+    socketTimeoutMS: 45000, // 45 seconds
+    maxPoolSize: 10, // Maintain up to 10 socket connections
+    minPoolSize: 5, // Maintain a minimum of 5 socket connections
+    maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+  };
+
+  console.log('[database] Attempting to connect to MongoDB...');
+  
+  mongoose.connect(process.env.MONGO_URI, mongooseOptions)
+    .then(() => {
+      console.log("✅ MongoDB connected successfully");
+      console.log(`[database] Connected to: ${mongoose.connection.name}`);
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB connection error:", err.message);
+      console.error("[database] Connection failed. Please check:");
+      console.error("1. MongoDB Atlas cluster is running and not paused");
+      console.error("2. Network connectivity to MongoDB Atlas");
+      console.error("3. Database credentials are correct");
+      console.error("4. IP address is whitelisted in MongoDB Atlas");
+      
+      // Don't exit the server, continue running without database
+      console.warn("⚠️  Server continuing without database connection");
+    });
+
+  // Handle connection events
+  mongoose.connection.on('disconnected', () => {
+    console.warn("⚠️  MongoDB disconnected");
+  });
+
+  mongoose.connection.on('reconnected', () => {
+    console.log("🔄 MongoDB reconnected");
+  });
+
+  mongoose.connection.on('error', (err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+  });
 }
 
 // Health check endpoint
@@ -60,6 +107,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/emails', emailRoutes);
+app.use('/api/email-tests', emailTestRoutes);
+app.use('/api/email-tests', emailTestRoutes);
 
 // Static serving of frontend in production (disabled for development)
 // const __filename = fileURLToPath(import.meta.url);

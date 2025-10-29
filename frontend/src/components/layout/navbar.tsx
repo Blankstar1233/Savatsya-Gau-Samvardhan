@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, ShoppingCart, MapPin, LogOut, Settings } from 'lucide-react';
+import { Menu, User, ShoppingCart, MapPin, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
@@ -60,18 +60,18 @@ const Navbar = () => {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="p-2 text-sawatsya-wood hover:text-sawatsya-terracotta">
+                  <Button variant="ghost" className="p-2 text-sawatsya-wood hover:bg-sawatsya-cream hover:text-sawatsya-earth transition-all duration-200 rounded-lg">
                     <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center text-sm font-medium">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth flex items-center justify-center text-sm font-medium hover:bg-sawatsya-terracotta hover:scale-105 transition-all duration-200 shadow-sm">
                           {(() => {
                             const avatarSrc = user?.avatar || user?.profilePicture || null;
                             if (avatarSrc) {
-                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover hover:brightness-110 transition-all duration-200" />;
                             }
-                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                            return <span className="text-white font-semibold">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
                           })()}
                         </div>
-                        <span className="hidden lg:block">{user?.name}</span>
+                        <span className="hidden lg:block font-medium">{user?.name}</span>
                       </div>
                   </Button>
                 </DropdownMenuTrigger>
@@ -83,10 +83,6 @@ const Navbar = () => {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
@@ -173,15 +169,15 @@ const Navbar = () => {
             
             {isAuthenticated ? (
               <>
-                <div className="px-3 py-2 border-t border-sawatsya-sand">
+                <div className="px-3 py-2 border-t border-sawatsya-sand hover:bg-sawatsya-cream transition-colors duration-200 rounded-md mx-2">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth text-white flex items-center justify-center text-sm font-medium">
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-sawatsya-earth text-white flex items-center justify-center text-sm font-medium hover:bg-sawatsya-terracotta hover:scale-105 transition-all duration-200 shadow-sm">
                           {(() => {
                             const avatarSrc = user?.avatar || user?.profilePicture || null;
                             if (avatarSrc) {
-                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover" />;
+                              return <img src={avatarSrc} alt={user?.name || 'User'} className="w-full h-full object-cover hover:brightness-110 transition-all duration-200" />;
                             }
-                            return <span className="text-white">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
+                            return <span className="text-white font-semibold">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>;
                           })()}
                         </div>
                     <div>
