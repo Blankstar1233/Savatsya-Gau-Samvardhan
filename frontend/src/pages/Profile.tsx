@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,12 +6,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Settings, Heart, Package, MapPin, Activity, Mail } from 'lucide-react';
 import ProfileManager from '@/components/profile/ProfileManager';
 import UserSettings from '@/components/profile/UserSettings';
+import OrderHistory from '@/components/profile/OrderHistory';
 import AnimatedPage from '@/components/ui/AnimatedPage';
 import { AnimatedCard, AnimatedText, AnimatedButton } from '@/components/ui/AnimatedComponents';
+import { API_ENDPOINTS } from '@/config/api';
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
+  const [orderCount, setOrderCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      fetchOrderCount();
+    }
+  }, [user]);
+
+  const fetchOrderCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(API_ENDPOINTS.ORDERS, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const orders = await response.json();
+        setOrderCount(orders.length);
+      }
+    } catch (error) {
+      console.error('Error fetching order count:', error);
+    }
+  };
 
   if (!user) {
     return (
@@ -144,7 +173,7 @@ const Profile = () => {
                     <Package className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-sawatsya-earth">0</div>
+                    <div className="text-2xl font-bold text-sawatsya-earth">{orderCount}</div>
                     <p className="text-xs text-muted-foreground">
                       Total orders placed
                     </p>
@@ -235,26 +264,7 @@ const Profile = () => {
 
             {}
             <TabsContent value="orders">
-              <AnimatedCard>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Package className="mr-2 h-5 w-5" />
-                    Order History
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <Package className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-                    <p className="text-gray-600 mb-6">
-                      You haven't placed any orders yet. Start shopping to see your order history here.
-                    </p>
-                    <Button onClick={() => window.location.href = '/products'}>
-                      Start Shopping
-                    </Button>
-                  </div>
-                </CardContent>
-              </AnimatedCard>
+              <OrderHistory />
             </TabsContent>
           </Tabs>
         </div>

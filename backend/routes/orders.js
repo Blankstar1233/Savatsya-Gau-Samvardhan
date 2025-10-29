@@ -5,18 +5,35 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { sendEmail, isEmailEnabled } from '../utils/mailer.js';
 
 const router = express.Router();
-
+
+
 router.get('/', authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const orders = await Order.find({ userId });
   res.json(orders);
 });
-
+
+
 router.post('/', authenticateJWT, async (req, res) => {
-  const userId = req.user.userId;
-  const { items, total } = req.body;
-  const order = new Order({ userId, items, total });
-  await order.save();
+  try {
+    const userId = req.user.userId;
+    const { items, total, status = 'completed', paymentMethod = 'UPI' } = req.body;
+    
+    // Generate order number
+    const orderNumber = `SGS${Date.now().toString().slice(-8)}${Math.floor(Math.random() * 100).toString().padStart(2, '0')}`;
+    
+    const order = new Order({ 
+      userId, 
+      items, 
+      total, 
+      status,
+      paymentMethod,
+      orderNumber,
+      updatedAt: new Date()
+    });
+    
+    await order.save();
+    console.log(`[orders] Order created: ${order._id} (${orderNumber}) for user ${userId}`);
  
   try {
     const broadcast = req.app?.locals?.broadcast;
@@ -53,10 +70,24 @@ router.post('/', authenticateJWT, async (req, res) => {
     console.warn('Failed to send order confirmation email', e?.message || e);
   }
 
- 
-  res.status(201).json({ order, emailEnabled: isEmailEnabled() });
+    
+    // Send success response
+    res.status(201).json({ 
+      order, 
+      emailEnabled: isEmailEnabled(),
+      message: 'Order created successfully'
+    });
+    
+  } catch (error) {
+    console.error('[orders] Error creating order:', error);
+    res.status(500).json({ 
+      error: 'Failed to create order',
+      message: error.message 
+    });
+  }
 });
-
+
+
 router.get('/all', authenticateJWT, async (req, res) => {
   if (!req.user?.isAdmin) return res.status(403).json({ error: 'Admin access required' });
   const orders = await Order.find();

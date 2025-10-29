@@ -1,9 +1,12 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const CheckoutSuccess = () => {
+  const location = useLocation();
+  const { orderId, orderTotal } = location.state || {};
+
   return (
     <div className="section-container min-h-[70vh] flex items-center justify-center">
       <div className="max-w-lg w-full text-center">
@@ -25,8 +28,12 @@ const CheckoutSuccess = () => {
           
           <div className="space-y-3 text-left">
             <div className="flex justify-between">
-              <span className="text-gray-600">Order Number:</span>
-              <span className="font-medium">#SGS{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</span>
+              <span className="text-gray-600">Order ID:</span>
+              <span className="font-medium">{orderId ? `#${orderId.slice(-8).toUpperCase()}` : '#SGS' + Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Order Total:</span>
+              <span className="font-medium text-sawatsya-earth">₹{orderTotal || '0'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Date:</span>
@@ -46,6 +53,9 @@ const CheckoutSuccess = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild className="btn-primary">
             <Link to="/products">Continue Shopping</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream">
+            <Link to="/profile">View Order History</Link>
           </Button>
           <Button asChild variant="outline" className="border-sawatsya-earth text-sawatsya-earth hover:bg-sawatsya-cream">
             <Link to="/">Back to Home</Link>

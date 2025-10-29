@@ -3,23 +3,85 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import ProductImage from '@/components/ui/ProductImage';
 import { toast } from 'sonner';
 import QRCodePayment from '@/components/checkout/QRCodePayment';
+import { API_ENDPOINTS } from '@/config/api';
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, totalItems, totalPrice } = useCart();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [showPaymentQR, setShowPaymentQR] = useState(false);
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
   
   const handleCheckout = () => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to complete your order');
+      navigate('/login');
+      return;
+    }
     setShowPaymentQR(true);
   };
   
-  const handlePaymentComplete = () => {
-    toast.success('Order placed successfully!');
-    clearCart();
-    navigate('/checkout-success');
+  const handlePaymentComplete = async () => {
+    if (!isAuthenticated || !user) {
+      toast.error('Please log in to complete your order');
+      return;
+    }
+
+    setIsProcessingOrder(true);
+    
+    try {
+      // Prepare order data
+      const orderItems = items.map(item => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price
+      }));
+
+      // Create order in the backend
+      const token = localStorage.getItem('token');
+      const response = await fetch(API_ENDPOINTS.ORDERS, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          items: orderItems,
+          total: totalPrice,
+          status: 'completed'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create order');
+      }
+
+      const orderResult = await response.json();
+      console.log('Order created successfully:', orderResult);
+
+      toast.success('Order placed successfully!');
+      clearCart();
+      
+      // Navigate to success page with order ID
+      navigate('/checkout-success', { 
+        state: { 
+          orderId: orderResult.order._id,
+          orderTotal: totalPrice 
+        } 
+      });
+      
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to process order. Please try again.');
+    } finally {
+      setIsProcessingOrder(false);
+    }
   };
   
   const handleCancelPayment = () => {
