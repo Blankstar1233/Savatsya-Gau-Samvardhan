@@ -96,7 +96,7 @@ npm run dev
 ## 📞 Contact & Support
 
 - **Business Email**: info@savatsya-gau-samvardhan.com
-- **Developer**: Harshal Chugwani
+- **Developer**: Harshal Chugwani and Ved Joshi
 - **GitHub**: [Repository Link](https://github.com/Blankstar1233/Savatsya-Gau-Samvardhan)
 
 ## 📄 License
